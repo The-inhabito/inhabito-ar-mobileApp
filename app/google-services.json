@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "582378989446",
+    "firebase_url": "https://livo-main-default-rtdb.firebaseio.com",
+    "project_id": "livo-main",
+    "storage_bucket": "livo-main.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:582378989446:android:7bc82707335b2a09e1ee07",
+        "android_client_info": {
+          "package_name": "com.example.livo"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBOODBmPfrTp4BICaAtJtXarVbv3fffkw0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
