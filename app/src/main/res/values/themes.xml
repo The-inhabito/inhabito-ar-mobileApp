@@ -3,8 +3,8 @@
     <style name="Base.Theme.LIVO" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your light theme here. -->
         <item name="colorPrimary">@color/black</item>
-        <item name="colorPrimaryVariant">@color/grey</item>
-        <item name="colorOnPrimary">@color/gold</item>
+        <item name="colorPrimaryVariant">@color/gold</item>
+        <item name="colorOnPrimary">@color/white</item>
         <!-- Add more color items as needed -->
     </style>
 
