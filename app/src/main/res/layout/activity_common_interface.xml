@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/common"
+    tools:context=".commonInterface">
+
+    <!-- Users Button -->
+    <Button
+        android:id="@+id/users"
+        android:layout_width="160dp"
+        android:layout_height="wrap_content"
+        android:text="Users"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="340dp"
+        />
+
+    <!-- Company Button -->
+    <Button
+        android:id="@+id/company"
+        android:layout_width="160dp"
+        android:layout_height="wrap_content"
+        android:text="Company"
+        app:layout_constraintTop_toBottomOf="@id/users"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="20dp"
+    />
+
+    <!-- Admin Button -->
+    <Button
+        android:id="@+id/admin"
+        android:layout_width="160dp"
+        android:layout_height="wrap_content"
+        android:text="Admin"
+        app:layout_constraintTop_toBottomOf="@id/company"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="20dp"
+   />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
