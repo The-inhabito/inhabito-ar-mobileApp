@@ -13,6 +13,9 @@
         android:theme="@style/Theme.LIVO"
         tools:targetApi="31">
         <activity
+            android:name=".commonInterface"
+            android:exported="false" />
+        <activity
             android:name=".customer.CustomerSignup"
             android:exported="false" />
         <activity
