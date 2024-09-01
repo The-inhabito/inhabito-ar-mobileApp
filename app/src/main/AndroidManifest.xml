@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
-
+    <!-- Required permissions -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -13,10 +16,19 @@
         android:theme="@style/Theme.LIVO"
         tools:targetApi="31">
         <activity
+            android:name=".company.HomeCompany"
+            android:exported="false" />
+        <activity
+            android:name=".company.CompanyData"
+            android:exported="false" />
+        <activity
             android:name=".commonInterface"
             android:exported="false" />
         <activity
             android:name=".customer.CustomerSignup"
+            android:exported="false" />
+        <activity
+            android:name=".company.CompanySignup"
             android:exported="false" />
         <activity
             android:name=".customer.CustomerLogin"
