@@ -11,6 +11,9 @@ googleGmsGoogleServices = "4.4.2"
 firebaseDatabase = "21.0.0"
 firebaseStorage = "21.0.0"
 firebaseFirestore = "25.1.0"
+sceneform = "1.17.1"
+sceneformUx = "1.17.1"
+assets = "1.17.1"
 
 [libraries]
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -23,6 +26,9 @@ constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayo
 firebase-database = { group = "com.google.firebase", name = "firebase-database", version.ref = "firebaseDatabase" }
 firebase-storage = { group = "com.google.firebase", name = "firebase-storage", version.ref = "firebaseStorage" }
 firebase-firestore = { group = "com.google.firebase", name = "firebase-firestore", version.ref = "firebaseFirestore" }
+sceneform = { module = "com.google.ar.sceneform:sceneform", version.ref = "sceneform" }
+sceneform-ux = { group = "com.google.ar.sceneform.ux", name = "sceneform-ux", version.ref = "sceneformUx" }
+assets = { group = "com.google.ar.sceneform", name = "assets", version.ref = "assets" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
