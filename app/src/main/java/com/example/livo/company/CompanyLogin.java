@@ -6,6 +6,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
@@ -15,6 +16,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.livo.R;
+
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -32,7 +34,6 @@ public class CompanyLogin extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_company_login);
 
         loginEmail = findViewById(R.id.login_email);
@@ -103,6 +104,11 @@ public class CompanyLogin extends AppCompatActivity {
                     }
 
                     if (isValid) {
+                        // Store the email in session
+                        sessionClass session = sessionClass.getInstance(getApplicationContext());
+                        session.setEmail(CompanyEmail);
+
+                        // Proceed to next activity
                         loginEmail.setError(null);
                         Intent intent = new Intent(CompanyLogin.this, HomeCompany.class);
                         startActivity(intent);
@@ -118,9 +124,11 @@ public class CompanyLogin extends AppCompatActivity {
 
 
             @Override
-            public void onCancelled(@NonNull DatabaseError error) {
 
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(CompanyLogin.this, "Database Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
             }
+
         });
     }
 }
