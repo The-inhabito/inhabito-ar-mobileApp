@@ -53,7 +53,10 @@ public class CompanySignup extends AppCompatActivity {
                 } else {
                     // Generate a unique ID and store user data
                     String companyId = reference.push().getKey();
-                    HelperClass helperClass = new HelperClass(companyEmail, password);
+                    String status = "pending"; // Initial status for a new signup
+                    HelperClass helperClass = new HelperClass(companyEmail, password, status);
+
+                    // Save data in Firebase
                     reference.child(companyId).setValue(helperClass);
 
                     // Set session email
@@ -67,6 +70,7 @@ public class CompanySignup extends AppCompatActivity {
                 }
             }
         });
+
 
         // Set OnClickListener for the login redirect text
         loginRedirectText.setOnClickListener(new View.OnClickListener() {

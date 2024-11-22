@@ -42,8 +42,8 @@ public class CustomerLogin extends AppCompatActivity {
 
                     if(checkCredentials == true){
                         Toast.makeText(CustomerLogin.this, "Login Successful", Toast.LENGTH_SHORT).show();
-                        Intent intent = new Intent(getApplicationContext(), HomeFragment.class);
-                        startActivity(intent);
+//                        Intent intent = new Intent(getApplicationContext(), HomeFragment.class);
+//                        startActivity(intent);
                     }else{
                         Toast.makeText(CustomerLogin.this, "Invalid Credentials", Toast.LENGTH_SHORT).show();
                     }
