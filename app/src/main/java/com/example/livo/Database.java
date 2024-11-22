@@ -1,5 +1,6 @@
 package com.example.livo;
 
+import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -10,10 +11,13 @@ import android.util.Log;
 
 import androidx.annotation.Nullable;
 
+import com.example.livo.company.order.OrderModelClass;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Database extends SQLiteOpenHelper {
 
@@ -55,6 +59,7 @@ public class Database extends SQLiteOpenHelper {
                 "user_id INTEGER, " +
                 "total_price DOUBLE, " +
                 "order_status TEXT, " +
+                "company_email TEXT," +
                 "created_at TEXT, " +
                 "CONSTRAINT fk_user_id FOREIGN KEY (user_id) REFERENCES userLogin_data(user_id) ON DELETE CASCADE" +
                 ")";
@@ -112,6 +117,11 @@ public class Database extends SQLiteOpenHelper {
 //        }
 //        db.close();
 //    }
+    @Override
+    public void onConfigure(SQLiteDatabase db) {
+        super.onConfigure(db);
+        db.setForeignKeyConstraintsEnabled(true); // Enable foreign keys
+    }
 
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
@@ -264,4 +274,36 @@ public class Database extends SQLiteOpenHelper {
             return false;
         }
     }
+
+
+
+
+
+    //Comapny side db
+    public List<OrderModelClass> getOrdersByCompanyEmail(String companyEmail) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        List<OrderModelClass> orderList = new ArrayList<>();
+
+        String query = "SELECT * FROM orders WHERE company_email = ?";
+        Cursor cursor = db.rawQuery(query, new String[]{companyEmail});
+
+        if (cursor.moveToFirst()) {
+            do {
+                @SuppressLint("Range") int orderID = cursor.getInt(cursor.getColumnIndex("order_id"));
+                @SuppressLint("Range") String orderDate = cursor.getString(cursor.getColumnIndex("order_date"));
+                @SuppressLint("Range")String productID = cursor.getString(cursor.getColumnIndex("product_id"));
+                @SuppressLint("Range")int quantity = cursor.getInt(cursor.getColumnIndex("quantity"));
+                @SuppressLint("Range")double price = cursor.getDouble(cursor.getColumnIndex("price"));
+                @SuppressLint("Range")String orderStatus = cursor.getString(cursor.getColumnIndex("order_status"));
+
+                orderList.add(new OrderModelClass(orderID, orderDate, productID, quantity, price, orderStatus));
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        return orderList;
+    }
+
+
+
+
 }
