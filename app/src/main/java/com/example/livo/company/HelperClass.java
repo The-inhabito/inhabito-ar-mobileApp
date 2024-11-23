@@ -1,16 +1,25 @@
 package com.example.livo.company;
 //for authentication purpose only
 public class HelperClass {
-    String email, password;
+    String email, password, status;
     //inhere email is our username
 
 
     public HelperClass() {
     }
 
-    public HelperClass(String email, String password) {
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public HelperClass(String email, String password, String status) {
         this.email = email;
         this.password = password;
+        this.status = status;
     }
 //Getters and Setters
     public String getEmail() {
