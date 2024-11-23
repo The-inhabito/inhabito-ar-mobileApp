@@ -247,37 +247,6 @@ public class Database extends SQLiteOpenHelper {
 
     }
 
-    public List<CompanyModel> getCompaniesFromSQLite() {
-        List<CompanyModel> companyList = new ArrayList<>();
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = null;
-
-        try {
-            String query = "SELECT * FROM companyData";
-            cursor = db.rawQuery(query, null);
-
-            if (cursor.moveToFirst()) {
-                do {
-                    String companyId = cursor.getString(cursor.getColumnIndexOrThrow("companyEmail"));
-                    String name = cursor.getString(cursor.getColumnIndexOrThrow("companyName"));
-                    String imageUrl = cursor.getString(cursor.getColumnIndexOrThrow("imageUrl"));
-
-                    CompanyModel company = new CompanyModel(companyId, name, imageUrl);
-                    companyList.add(company);
-                } while (cursor.moveToNext());
-            }
-        } catch (Exception e) {
-            Log.e("DatabaseError", "Error fetching companies from SQLite", e);
-        } finally {
-            if (cursor != null) {
-                cursor.close();
-            }
-            db.close();
-        }
-
-        return companyList;
-    }
-
 
 
     // Method to insert product into SQLite
@@ -296,6 +265,7 @@ public class Database extends SQLiteOpenHelper {
 //        }
 //        db.close();
 //    }
+
     @Override
     public void onConfigure(SQLiteDatabase db) {
         super.onConfigure(db);
@@ -504,7 +474,7 @@ public class Database extends SQLiteOpenHelper {
     }
 
 
-    Comapny side db
+   // Comapny side db
     public List<OrderModelClass> getOrdersByCompanyEmail(String companyEmail) {
         SQLiteDatabase db = this.getReadableDatabase();
         List<OrderModelClass> orderList = new ArrayList<>();
