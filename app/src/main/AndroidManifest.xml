@@ -21,6 +21,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.LIVO"
         tools:targetApi="31">
+        <!--
         <activity
             android:name=".company.viewModel.ViewModelActivity"
             android:exported="false" />
@@ -29,7 +30,7 @@
             android:exported="false" />
         <activity
             android:name=".company.ARActivity"
-            android:exported="false" />
+            android:exported="false" /> -->
         <activity
             android:name=".company.HomeCompany"
             android:exported="false" />
@@ -43,6 +44,9 @@
             android:name=".customer.CustomerSignup"
             android:exported="false" />
         <activity
+            android:name=".customer.CustomerData"
+            android:exported="false" />
+        <activity
             android:name=".company.CompanySignup"
             android:exported="false" />
         <activity
@@ -50,6 +54,12 @@
             android:exported="false" />
         <activity
             android:name=".company.CompanyLogin"
+            android:exported="false" />
+        <activity
+            android:name=".customer.Home"
+            android:exported="false" />
+        <activity
+            android:name=".customer.HomeFragment"
             android:exported="false" />
         <activity
             android:name=".admin.AdminLogin"
