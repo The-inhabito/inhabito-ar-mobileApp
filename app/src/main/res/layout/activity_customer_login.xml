@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/customerLogin"
     android:layout_width="match_parent"
@@ -29,7 +28,7 @@
             android:layout_marginBottom="20dp"/>
 
         <EditText
-            android:id="@+id/cus_loginEmail"
+            android:id="@+id/cusLoginEmail"
             android:layout_width="280dp"
             android:layout_height="50dp"
             android:layout_marginTop="20dp"
@@ -42,7 +41,7 @@
             android:textColor="@color/black" />
 
         <EditText
-            android:id="@+id/cus_loginPass"
+            android:id="@+id/cusLoginPass"
             android:layout_width="280dp"
             android:layout_height="50dp"
             android:layout_marginTop="30dp"
@@ -57,7 +56,7 @@
 
 
         <Button
-            android:id="@+id/cus_loginBtn"
+            android:id="@+id/cusLoginBtn"
             android:layout_width="280dp"
             android:layout_height="60dp"
             android:layout_gravity="center"
