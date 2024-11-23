@@ -2,9 +2,15 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
     <!-- Required permissions -->
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.CAMERA" />
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -15,6 +21,16 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.LIVO"
         tools:targetApi="31">
+        <!--
+        <activity
+            android:name=".company.viewModel.ViewModelActivity"
+            android:exported="false" />
+        <activity
+            android:name=".company.CompanyEditProductDetails"
+            android:exported="false" />
+        <activity
+            android:name=".company.ARActivity"
+            android:exported="false" /> -->
         <activity
             android:name=".company.HomeCompany"
             android:exported="false" />
@@ -28,6 +44,9 @@
             android:name=".customer.CustomerSignup"
             android:exported="false" />
         <activity
+            android:name=".customer.CustomerData"
+            android:exported="false" />
+        <activity
             android:name=".company.CompanySignup"
             android:exported="false" />
         <activity
@@ -35,6 +54,12 @@
             android:exported="false" />
         <activity
             android:name=".company.CompanyLogin"
+            android:exported="false" />
+        <activity
+            android:name=".customer.Home"
+            android:exported="false" />
+        <activity
+            android:name=".customer.HomeFragment"
             android:exported="false" />
         <activity
             android:name=".admin.AdminLogin"

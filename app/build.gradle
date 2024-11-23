@@ -46,10 +46,19 @@ dependencies {
     implementation libs.firebase.database
     implementation libs.firebase.storage
     implementation libs.firebase.firestore
+//    implementation libs.firebase.appcheck.debug
     testImplementation libs.junit
     androidTestImplementation libs.ext.junit
     androidTestImplementation libs.espresso.core
     implementation 'com.github.bumptech.glide:glide:4.12.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.12.0'
 
+    // ARSceneview
+    implementation 'io.github.sceneview:arsceneview:0.10.0'
+    implementation 'com.google.firebase:firebase-appcheck-safetynet:16.0.0'
+
+
+    implementation("androidx.navigation:navigation-fragment-ktx:2.8.4")
+    implementation("androidx.navigation:navigation-ui-ktx:2.8.4")
+    implementation(libs.material.v1100)
 }

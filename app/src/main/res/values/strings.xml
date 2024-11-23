@@ -2,4 +2,11 @@
     <string name="app_name">LIVO</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="profile">profile</string>
+    <string name="edit">Edit</string>
+    <string name="deactivate">Deactivate</string>
+    <string name="deactivateText">"If you deactivate your account, that means you are deleting your account permanently"</string>
+    <string name="admin">Admin</string>
+    <string name="orders">Orders</string>
+    <string name="edit_product">Edit Product</string>
 </resources>

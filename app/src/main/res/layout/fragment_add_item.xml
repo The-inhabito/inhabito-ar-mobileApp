@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:background="@drawable/companybg"
+    tools:context=".company.CompanyAddItemFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="10dp">
+
+        <!-- Product Name -->
+        <EditText
+            android:id="@+id/p_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/white_box"
+            android:hint="Product Name"
+            android:padding="10dp"
+            android:layout_marginBottom="8dp"
+            android:inputType="textPersonName" />
+
+        <!-- Product Description -->
+        <EditText
+            android:id="@+id/p_description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/white_box"
+            android:hint="Product Description"
+            android:padding="10dp"
+            android:layout_marginBottom="8dp"
+            android:inputType="textMultiLine" />
+
+        <!-- Product Price -->
+        <EditText
+            android:id="@+id/p_price"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/white_box"
+            android:hint="Product Price"
+            android:padding="10dp"
+            android:layout_marginBottom="8dp"
+            android:inputType="numberDecimal" />
+
+        <!-- Product Quantity -->
+        <EditText
+            android:id="@+id/p_quantity"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/white_box"
+            android:hint="Quantity"
+            android:padding="10dp"
+            android:layout_marginBottom="8dp"
+            android:inputType="number" />
+
+        <!-- Normal Image Upload -->
+        <ImageView
+            android:id="@+id/p_normal_image"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:layout_marginBottom="8dp"
+            android:src="@drawable/upload"
+            android:scaleType="centerCrop"
+            android:contentDescription="Product Normal Image"
+            android:background="@drawable/white_box" />
+
+        <!-- 3D Model Upload Button -->
+        <Button
+            android:id="@+id/upload_3d_model"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Upload 3D Model"
+            android:layout_marginBottom="10dp"
+            android:backgroundTint="@color/black"
+            android:textColor="@color/white" />
+
+        <!-- Submit Button -->
+        <Button
+            android:id="@+id/p_submit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Submit"
+            android:backgroundTint="@color/black"
+            android:textColor="@color/white" />
+
+    </LinearLayout>
+
+</ScrollView>

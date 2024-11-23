@@ -1,5 +1,6 @@
 package com.example.livo;
 
+import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -10,10 +11,17 @@ import android.util.Log;
 
 import androidx.annotation.Nullable;
 
+//import com.example.livo.company.order.OrderModelClass;
+import com.example.livo.customer.CompanyModel;
+import com.example.livo.customer.CustomerSession;
+import com.example.livo.customer.ProductModel;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Database extends SQLiteOpenHelper {
 
@@ -39,13 +47,12 @@ public class Database extends SQLiteOpenHelper {
 
         // Create userData table with foreign key reference to userLogin_data(email)
         String createTableQuery = "CREATE TABLE userData (" +
-                "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                "user_id INTEGER, " +
                 "name TEXT, " +
                 "address TEXT, " +
                 "profile_pic BLOB, " +
                 "contact TEXT, " +
-                "email TEXT, " +
-                "CONSTRAINT fk_email FOREIGN KEY (email) REFERENCES userLogin_data(email) ON DELETE CASCADE" +
+                "CONSTRAINT fk_user_id FOREIGN KEY (user_id) REFERENCES userLogin_data(user_id) ON DELETE CASCADE" +
                 ")";
         db.execSQL(createTableQuery);
 
@@ -55,6 +62,7 @@ public class Database extends SQLiteOpenHelper {
                 "user_id INTEGER, " +
                 "total_price DOUBLE, " +
                 "order_status TEXT, " +
+                "company_email TEXT," +
                 "created_at TEXT, " +
                 "CONSTRAINT fk_user_id FOREIGN KEY (user_id) REFERENCES userLogin_data(user_id) ON DELETE CASCADE" +
                 ")";
@@ -72,29 +80,174 @@ public class Database extends SQLiteOpenHelper {
                 "CONSTRAINT fk_order_id FOREIGN KEY (order_id) REFERENCES orders(order_id) ON DELETE CASCADE" +
                 ")";
         db.execSQL(createTableQuery3);
+
+        String createTableQuery4 = "CREATE TABLE products (" +
+                "product_id INTEGER PRIMARY KEY, " +
+                "companyID TEXT, " +
+                "product_name TEXT, " +
+                "description TEXT, " +
+                "quantity INTEGER, " +
+                "price DOUBLE, " +
+                "imageUrl TEXT, " +
+                "modelUrl TEXT, " +
+                "CONSTRAINT fk_companyID FOREIGN KEY (companyID) REFERENCES companies(companyID) ON DELETE CASCADE" +
+                ")";
+        db.execSQL(createTableQuery4);
+
+        String createTableQuery5 = "CREATE TABLE companies (" +
+                "companyID INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                "companyEmail TEXT, " +
+                "password TEXT, " +
+                "status TEXT);";
+        db.execSQL(createTableQuery5);
+
+        String createTableQuery6 = "CREATE TABLE companyData (" +
+                "companyEmail TEXT PRIMARY KEY, " +
+                "companyName TEXT, " +
+                "companyAddress TEXT, " +
+                "companyContactNo TEXT, " +
+                "companyID INTEGER," +
+                "imageUrl TEXT," +
+                "CONSTRAINT fk_companyID FOREIGN KEY (companyID) REFERENCES companies(companyID) ON DELETE CASCADE" +
+                ");";
+        db.execSQL(createTableQuery6);
+
     }
 
-    // Fetch product data from Firebase and insert into SQLite
-//    public void fetchProductsFromFirebaseAndInsert(final String companyId) {
-//        firestore.collection("companyData")
-//                .document(companyId)
-//                .collection("products")
-//                .get()
-//                .addOnCompleteListener(task -> {
-//                    if (task.isSuccessful()) {
-//                        for (QueryDocumentSnapshot document : task.getResult()) {
-//                            String productId = document.getId();
-//                            String productName = document.getString("name");
-//                            double price = document.getDouble("price");
-//
-//                            // Insert product into SQLite
-//                            insertProductIntoSQLite(productId, productName, price);
-//                        }
-//                    } else {
-//                        Log.d(TAG, "Error getting products: ", task.getException());
-//                    }
-//                });
-//    }
+    public void fetchProductsFromFirebaseAndInsert(final String companyID) {
+        firestore.collection("companyData")
+                .document(companyID)
+                .collection("products")
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        SQLiteDatabase db = this.getWritableDatabase(); // Open the database once
+                        db.beginTransaction(); // Begin a transaction for batch inserts
+                        try {
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                // Extract product fields from Firebase
+                                String productId = document.getId();
+                                String productName = document.getString("name");
+                                double price = document.contains("price") ? document.getDouble("price") : 0.0;
+                                String description = document.getString("description");
+                                int quantity = document.contains("quantity") ? document.getLong("quantity").intValue() : 0;
+                                String imageUrl = document.getString("imageUrl");
+                                String modelUrl = document.getString("modelUrl");
+
+                                // Insert product into SQLite
+                                insertProductIntoSQLite(db, productId, productName, price, description, quantity, imageUrl, modelUrl);
+                            }
+                            db.setTransactionSuccessful(); // Mark transaction as successful
+                        } catch (Exception e) {
+                            Log.e("SQLiteError", "Error inserting products: ", e);
+                        } finally {
+                            db.endTransaction(); // End the transaction
+                            db.close(); // Close the database
+                        }
+                    } else {
+                        Log.d(TAG, "Error getting products: ", task.getException());
+                    }
+                });
+    }
+
+    private void insertProductIntoSQLite(SQLiteDatabase db, String productId, String productName, double price, String description, int quantity, String imageUrl, String modelUrl) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("product_id", productId);
+        contentValues.put("product_name", productName);
+        contentValues.put("price", price);
+        contentValues.put("description", description);
+        contentValues.put("quantity", quantity);
+        contentValues.put("image_url", imageUrl);
+        contentValues.put("model_url", modelUrl);
+
+        // Insert the product data into the products table
+        long result = db.insertWithOnConflict("products", null, contentValues, SQLiteDatabase.CONFLICT_REPLACE);
+        if (result == -1) {
+            Log.d("SQLiteError", "Failed to insert product: " + productId);
+        } else {
+            Log.d("SQLiteSuccess", "Product inserted successfully: " + productId);
+        }
+    }
+
+    public List<ProductModel> getProductsByCompanyId(String companyId) {
+        List<ProductModel> productList = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = null;
+
+        try {
+            String query = "SELECT * FROM products WHERE companyID = ?";
+            cursor = db.rawQuery(query, new String[]{companyId});
+
+            if (cursor.moveToFirst()) {
+                do {
+                    String productId = cursor.getString(cursor.getColumnIndexOrThrow("productId"));
+                    String name = cursor.getString(cursor.getColumnIndexOrThrow("name"));
+                    double price = cursor.getDouble(cursor.getColumnIndexOrThrow("price"));
+                    String description = cursor.getString(cursor.getColumnIndexOrThrow("description"));
+                    String imageUrl = cursor.getString(cursor.getColumnIndexOrThrow("imageUrl"));
+                    String modelUrl = cursor.getString(cursor.getColumnIndexOrThrow("modelUrl"));
+                    int quantity = cursor.getInt(cursor.getColumnIndexOrThrow("quantity"));
+
+                    ProductModel product = new ProductModel(productId, name, price, description, imageUrl, modelUrl,quantity);
+                    productList.add(product);
+                } while (cursor.moveToNext());
+            }
+        } catch (Exception e) {
+            Log.e("DatabaseError", "Error fetching products: ", e);
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+            db.close();
+        }
+
+        return productList;
+    }
+
+
+    private void insertCompanyIntoSQLite(SQLiteDatabase db, String companyEmail, String companyName, String imageUrl) {
+        ContentValues values = new ContentValues();
+        values.put("company_id", companyEmail);
+        values.put("name", companyName);
+        values.put("email", imageUrl);
+
+        long result = db.insertWithOnConflict("companyData", null, values, SQLiteDatabase.CONFLICT_REPLACE);
+        if (result == -1) {
+            Log.d("SQLiteError", "Failed to insert company: " + companyName);
+        }
+    }
+
+    public void fetchCompaniesFromFirebaseAndInsert(final String companyID) {
+        firestore.collection("companyData")
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        SQLiteDatabase db = this.getWritableDatabase();
+                        db.beginTransaction();
+                        try {
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                String companyEmail = document.getString("companyEmail");
+                                String companyName = document.getString("companyName");
+                                String cImage = document.getString("imageUrl");
+
+                                // Insert into SQLite
+                                insertCompanyIntoSQLite(db, companyEmail, companyName, cImage);
+                            }
+                            db.setTransactionSuccessful();
+                        } catch (Exception e) {
+                            Log.e(TAG, "Error inserting companies: ", e);
+                        } finally {
+                            db.endTransaction();
+                            db.close();
+                        }
+                    } else {
+                        Log.e(TAG, "Error fetching companies: ", task.getException());
+                    }
+                });
+
+    }
+
+
 
     // Method to insert product into SQLite
 //    private void insertProductIntoSQLite(String productId, String productName, double price) {
@@ -114,6 +267,12 @@ public class Database extends SQLiteOpenHelper {
 //    }
 
     @Override
+    public void onConfigure(SQLiteDatabase db) {
+        super.onConfigure(db);
+        db.setForeignKeyConstraintsEnabled(true);
+    }
+
+    @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
 
     }
@@ -127,6 +286,7 @@ public class Database extends SQLiteOpenHelper {
         long result = db.insert("userLogin_data", null, contentValues);
         return result != -1;
     }
+
     public boolean checkEmail(String email) {
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery("SELECT * FROM userLogin_data WHERE email = ?", new String[]{email});
@@ -139,81 +299,129 @@ public class Database extends SQLiteOpenHelper {
         return cursor.getCount() > 0;
     }
 
-    //userData TABLE OPERATIONS
-    public boolean insertUserdata(String name, String address, Bitmap image, String contact, String email) {
+    public boolean insertUserdata(String name, String address, Bitmap image, String contact, Context context) {
         SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = null;
         try {
-            // Check if the email exists in the userLogin_data table
-            Cursor cursor = db.rawQuery("SELECT * FROM userLogin_data WHERE email = ?", new String[]{email});
-            if (cursor.getCount() == 0) {
-                // Email does not exist in userLogin_data table, cannot insert into userData
-                Log.e(TAG, "Email does not exist in userLogin_data table");
-                return false;
+            // Retrieve email from CustomerSession
+            CustomerSession customerSession = CustomerSession.getInstance(context);
+            String email = customerSession.getEmail();
+
+            if (email == null || email.isEmpty()) {
+                Log.e(TAG, "No email found in session");
+                return false; // Email is required for the foreign key check
             }
 
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            image.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
-            byte[] imageInBytes = outputStream.toByteArray();
+            // Fetch user_id for the given email
+            cursor = db.rawQuery("SELECT user_id FROM userLogin_data WHERE email = ?", new String[]{email});
+            if (cursor.moveToFirst()) {
+                int userId = cursor.getInt(0); // Get the user_id
 
-            ContentValues values = new ContentValues();
-            values.put("name", name);
-            values.put("address", address);
-            values.put("profile_pic", imageInBytes);
-            values.put("contact", contact);
-            values.put("email", email); // Insert the email value into userData, which is a foreign key
+                // Compress the Bitmap image
+                ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                image.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
+                byte[] imageInBytes = outputStream.toByteArray();
 
-            long result = db.insert("userData", null, values);
-            if (result != -1) {
-                Log.d(TAG, "Data inserted successfully");
-                return true;
+                // Prepare values for insertion
+                ContentValues values = new ContentValues();
+                values.put("user_id", userId);
+                values.put("name", name);
+                values.put("address", address);
+                values.put("profile_pic", imageInBytes);
+                values.put("contact", contact);
+
+                // Insert data into userData table
+                long result = db.insert("userData", null, values);
+                if (result != -1) {
+                    Log.d(TAG, "Data inserted successfully");
+                    return true;
+                } else {
+                    Log.e(TAG, "Error inserting user data");
+                    return false;
+                }
             } else {
-                Log.e(TAG, "Error inserting user data");
+                Log.e(TAG, "Email does not exist in userLogin_data table");
                 return false;
             }
         } catch (Exception e) {
             Log.e(TAG, "Error inserting user data: " + e.getMessage());
             return false;
+        } finally {
+            if (cursor != null) {
+                cursor.close(); // Close cursor to avoid memory leaks
+            }
         }
     }
 
-    public boolean updateUserData(String email, String name, String address, String contact, Bitmap newProfilePic) {
+    public boolean updateUserData(int userId, Bitmap profileImg, String cusName, String newEmail, String address, String contact) {
         SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues values = new ContentValues();
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        db.beginTransaction(); // Begin a transaction to ensure atomicity
+        try {
+            // Update userData table
+            ContentValues userDataValues = new ContentValues();
 
-        // Convert the new profile picture (Bitmap) to byte array
-        if (newProfilePic != null) {
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            newProfilePic.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
-            byte[] imageInBytes = outputStream.toByteArray();
-            values.put("profile_pic", imageInBytes); // Add the new profile picture to the values
+            // Convert Bitmap to byte array if provided
+            if (profileImg != null) {
+                profileImg.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
+                byte[] imageInBytes = outputStream.toByteArray();
+                userDataValues.put("profile_pic", imageInBytes);
+            }
+
+            // Add values to update in userData
+            if (cusName != null && !cusName.isEmpty()) {
+                userDataValues.put("name", cusName);
+            }
+            if (address != null && !address.isEmpty()) {
+                userDataValues.put("address", address);
+            }
+            if (contact != null && !contact.isEmpty()) {
+                userDataValues.put("contact", contact);
+            }
+
+            // Update the userData table
+            int userDataRowsUpdated = db.update("userData", userDataValues, "user_id = ?", new String[]{String.valueOf(userId)});
+
+            // Update email in userLogin_data table
+            if (newEmail != null && !newEmail.isEmpty()) {
+                ContentValues userLoginValues = new ContentValues();
+                userLoginValues.put("email", newEmail);
+
+                int userLoginRowsUpdated = db.update("userLogin_data", userLoginValues, "user_id = ?", new String[]{String.valueOf(userId)});
+
+                // Check if userLogin_data update failed
+                if (userLoginRowsUpdated <= 0) {
+                    throw new Exception("Failed to update email in userLogin_data.");
+                }
+            }
+
+            // Commit the transaction if all updates succeed
+            db.setTransactionSuccessful();
+            return userDataRowsUpdated > 0;
+
+        } catch (Exception e) {
+            Log.e("Database", "Error updating user data: " + e.getMessage());
+            return false;
+        } finally {
+            try {
+                outputStream.close();
+            } catch (IOException e) {
+                Log.e("Database", "Error closing stream: " + e.getMessage());
+            }
+            db.endTransaction(); // End the transaction
         }
-
-        // Add the other fields to be updated
-        values.put("name", name);
-        values.put("address", address);
-        values.put("contact", contact);
-
-        // Update the user data based on the email (foreign key)
-        int result = db.update("userData", values, "email=?", new String[]{email});
-
-        return result > 0; // returns true if the update was successful
     }
 
-    public Cursor getUserData(String email) {
+    public Cursor getUserData(int userId) {
         SQLiteDatabase db = this.getReadableDatabase();
-        return db.rawQuery("SELECT * FROM userData WHERE email = ?", new String[]{email});
+        return db.rawQuery(
+                "SELECT u.name, u.address, u.profile_pic, u.contact, l.email " +
+                        "FROM userData u INNER JOIN userLogin_data l ON u.user_id = l.user_id " +
+                        "WHERE u.user_id = ?",
+                new String[]{String.valueOf(userId)}
+        );
     }
 
-    public boolean updateProfileImage(int userId, byte[] profileImage) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put("profile_pic", profileImage);  // Insert the byte array into the BLOB column
-
-        // Update the user's profile picture where the user ID matches
-        int rowsAffected = db.update("userData", values, "user_id = ?", new String[]{String.valueOf(userId)});
-
-        return rowsAffected > 0;  // Return true if the update was successful
-    }
 
 
     //order TABLE OPERATIONS
@@ -264,4 +472,33 @@ public class Database extends SQLiteOpenHelper {
             return false;
         }
     }
+
+
+   // Comapny side db
+    public List<OrderModelClass> getOrdersByCompanyEmail(String companyEmail) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        List<OrderModelClass> orderList = new ArrayList<>();
+
+        String query = "SELECT * FROM orders WHERE company_email = ?";
+        Cursor cursor = db.rawQuery(query, new String[]{companyEmail});
+
+        if (cursor.moveToFirst()) {
+            do {
+                @SuppressLint("Range") int orderID = cursor.getInt(cursor.getColumnIndex("order_id"));
+                @SuppressLint("Range") String orderDate = cursor.getString(cursor.getColumnIndex("order_date"));
+                @SuppressLint("Range")String productID = cursor.getString(cursor.getColumnIndex("product_id"));
+                @SuppressLint("Range")int quantity = cursor.getInt(cursor.getColumnIndex("quantity"));
+                @SuppressLint("Range")double price = cursor.getDouble(cursor.getColumnIndex("price"));
+                @SuppressLint("Range")String orderStatus = cursor.getString(cursor.getColumnIndex("order_status"));
+
+                orderList.add(new OrderModelClass(orderID, orderDate, productID, quantity, price, orderStatus));
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        return orderList;
+    }
+
+
+
+
 }

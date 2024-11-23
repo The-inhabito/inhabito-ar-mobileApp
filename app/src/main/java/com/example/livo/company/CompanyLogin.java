@@ -6,6 +6,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
@@ -15,6 +16,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.livo.R;
+
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -32,7 +34,6 @@ public class CompanyLogin extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_company_login);
 
         loginEmail = findViewById(R.id.login_email);
@@ -81,7 +82,7 @@ public class CompanyLogin extends AppCompatActivity {
             return true;
         }
     }
-    public void checkCompany(){
+    public void checkCompany() {
         String CompanyEmail = loginEmail.getText().toString().trim();
         String CompanyPass = loginPass.getText().toString().trim();
 
@@ -94,8 +95,11 @@ public class CompanyLogin extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
                     boolean isValid = false;
+                    String status = "";
                     for (DataSnapshot companySnapshot : snapshot.getChildren()) {
                         String passwordFromDb = companySnapshot.child("password").getValue(String.class);
+                        status = companySnapshot.child("status").getValue(String.class);
+
                         if (passwordFromDb != null && passwordFromDb.equals(CompanyPass)) {
                             isValid = true;
                             break;
@@ -103,9 +107,22 @@ public class CompanyLogin extends AppCompatActivity {
                     }
 
                     if (isValid) {
-                        loginEmail.setError(null);
-                        Intent intent = new Intent(CompanyLogin.this, HomeCompany.class);
-                        startActivity(intent);
+                        if ("approved".equals(status)) {
+                            // Store the email in session
+                            sessionClass session = sessionClass.getInstance(getApplicationContext());
+                            session.setEmail(CompanyEmail);
+
+                            // Proceed to HomeCompany activity
+                            Intent intent = new Intent(CompanyLogin.this, HomeCompany.class);
+                            startActivity(intent);
+                            finish();
+                        } else if ("pending".equals(status)) {
+                            Toast.makeText(CompanyLogin.this, "Your account is under review. Please wait for admin approval.", Toast.LENGTH_LONG).show();
+                        } else if ("rejected".equals(status)) {
+                            Toast.makeText(CompanyLogin.this, "Your account has been rejected. Please contact support.", Toast.LENGTH_LONG).show();
+                        } else {
+                            Toast.makeText(CompanyLogin.this, "Account status unknown. Contact support.", Toast.LENGTH_LONG).show();
+                        }
                     } else {
                         loginPass.setError("Invalid Credentials");
                         loginPass.requestFocus();
@@ -116,11 +133,11 @@ public class CompanyLogin extends AppCompatActivity {
                 }
             }
 
-
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-
+                Toast.makeText(CompanyLogin.this, "Database Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }
+
 }

@@ -4,13 +4,18 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 public class CustomerSession {
+    private static final String SESSION_PREFS = "UserSession";
+    private static final String USER_EMAIL_KEY = "email";
+
     private static CustomerSession instance;
     private SharedPreferences sharedPreferences;
 
+    // Private constructor for singleton
     private CustomerSession(Context context) {
-        sharedPreferences = context.getSharedPreferences("UserSession", Context.MODE_PRIVATE);
+        sharedPreferences = context.getSharedPreferences(SESSION_PREFS, Context.MODE_PRIVATE);
     }
 
+    // Singleton instance
     public static synchronized CustomerSession getInstance(Context context) {
         if (instance == null) {
             instance = new CustomerSession(context.getApplicationContext());
@@ -18,23 +23,34 @@ public class CustomerSession {
         return instance;
     }
 
-
+    // Get email from session
     public String getEmail() {
-        String email = sharedPreferences.getString("email", null);
-        return (email != null && !email.isEmpty()) ? email : null;
+        if (sharedPreferences == null) {
+            return null; // Fallback in case of failure
+        }
+        return sharedPreferences.getString(USER_EMAIL_KEY, null);
     }
 
-
+    // Set email in session
     public void setEmail(String email) {
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString("email", email);
-        editor.apply();
+        if (sharedPreferences != null) {
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putString(USER_EMAIL_KEY, email);
+            editor.apply();
+        }
     }
 
+    // Clear the session
     public void clearSession() {
-        // Clear the user email from the session
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.clear();
-        editor.apply();
+        if (sharedPreferences != null) {
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.clear();
+            editor.apply();
+        }
+    }
+
+    // Check if there is an active session
+    public boolean hasActiveSession() {
+        return getEmail() != null;
     }
 }
