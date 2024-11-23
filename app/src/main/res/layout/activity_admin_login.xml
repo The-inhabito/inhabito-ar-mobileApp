@@ -41,7 +41,7 @@
                     android:layout_height="60dp"
                     android:layout_marginTop="20dp"
                     android:background="@drawable/admin_border"
-                    android:drawableLeft="@drawable/baseline_password_24"
+                    android:drawableLeft="@drawable/pass"
                     android:drawablePadding="8dp"
                     android:hint="Password"
                     android:inputType="textPassword"

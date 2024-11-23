@@ -5,29 +5,23 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
-import com.example.livo.LoginActivity;
-import com.example.livo.MainActivity;
-import com.example.livo.R;
-import com.example.livo.databinding.ActivityLoginBinding;
+import com.example.livo.databinding.ActivityAdminLoginBinding;
 
 public class AdminLogin extends AppCompatActivity {
 
-    ActivityLoginBinding binding;
-    admin_dbHelper databaseHelper;
+    ActivityAdminLoginBinding binding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding = ActivityLoginBinding.inflate(getLayoutInflater());
+        binding = ActivityAdminLoginBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-//        databaseHelper = new admin_dbHelper(this);
+        // Hardcoded credentials
+        final String hardcodedEmail = "admin@gmail.com";
+        final String hardcodedPassword = "admin123";
 
         binding.loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -35,32 +29,19 @@ public class AdminLogin extends AppCompatActivity {
                 String email = binding.loginEmail.getText().toString();
                 String password = binding.loginPassword.getText().toString();
 
-                if (email.equals("") || password.equals(""))
+                if (email.isEmpty() || password.isEmpty()) {
                     Toast.makeText(AdminLogin.this, "All fields are mandatory", Toast.LENGTH_SHORT).show();
-                else {
-                    Boolean checkCredentials = databaseHelper.checkEmailPassword(email, password);
-
-                    if (checkCredentials == true) {
+                } else {
+                    // Check credentials with hardcoded values
+                    if (email.equals(hardcodedEmail) && password.equals(hardcodedPassword)) {
                         Toast.makeText(AdminLogin.this, "Login Successfully", Toast.LENGTH_SHORT).show();
-                        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                        Intent intent = new Intent(getApplicationContext(), AdminMainActivity.class);
                         startActivity(intent);
                     } else {
                         Toast.makeText(AdminLogin.this, "Invalid credentials", Toast.LENGTH_SHORT).show();
                     }
                 }
-
-
             }
         });
-//        binding.signupRedirectText.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Intent intent = new Intent(AdminLogin.this, adminsignup.class);
-//                startActivity(intent);
-//            }
-//        });
-
-
     }
-
 }
