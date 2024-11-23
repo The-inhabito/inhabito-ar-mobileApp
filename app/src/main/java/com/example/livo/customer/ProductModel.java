@@ -2,15 +2,25 @@ package com.example.livo.customer;
 
 public class ProductModel {
     private String productId, name, description, imageUrl, modelUrl;
+    private Integer quantity;
     private double price;
 
-    public ProductModel(String productId, String name, double price, String description, String imageUrl, String modelUrl) {
+    public ProductModel(String productId, String name, double price, String description, String imageUrl, String modelUrl, Integer quantity) {
         this.productId = productId;
         this.name = name;
         this.price = price;
         this.description = description;
         this.imageUrl = imageUrl;
         this.modelUrl = modelUrl;
+        this.quantity = quantity;
+    }
+
+    public Integer getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(Integer quantity) {
+        this.quantity = quantity;
     }
 
     public String getDescription() {
