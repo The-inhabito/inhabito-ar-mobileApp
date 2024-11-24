@@ -12,6 +12,7 @@ import androidx.fragment.app.FragmentTransaction;
 import com.example.livo.R;
 import com.example.livo.customer.Products.Cart;
 //import com.example.livo.customer.Products.CartFragment;
+import com.example.livo.customer.Products.CartFragment;
 import com.example.livo.databinding.ActivityCustomerHomeBinding;
 
 public class Home extends AppCompatActivity {
@@ -31,7 +32,7 @@ public class Home extends AppCompatActivity {
             if (itemId == R.id.home) {
                 fragment = new HomeFragment();
             } else if (itemId == R.id.cart) {
-//                fragment = new CartFragment();
+                fragment = new CartFragment();
             } else if (itemId == R.id.profile) {
                 fragment = new ProfileFragment();
             } else if (itemId == R.id.notify) {

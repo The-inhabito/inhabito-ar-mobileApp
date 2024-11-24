@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.livo.R;
 import com.example.livo.customer.CompanyModel;
+import com.example.livo.customer.Home;
 import com.example.livo.customer.ProductModel;
 import com.example.livo.customer.RecyclerViewInterfaceCus;
 import com.google.firebase.database.DataSnapshot;
@@ -47,7 +48,6 @@ public class customerProductFragment extends Fragment {
         }
     }
 
-    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_customer_product, container, false);
@@ -58,24 +58,33 @@ public class customerProductFragment extends Fragment {
         productList = new ArrayList<>();
 
         // Initialize RecyclerViewInterface
-        RecyclerViewInterfaceCus recyclerViewInterface = position -> {
-            ProductModel selectedProduct = productList.get(position);
-            ProductDetailsFragment productDetailsFragment = new ProductDetailsFragment();
+        RecyclerViewInterfaceCus recyclerViewInterface = new RecyclerViewInterfaceCus() {
+            @Override
+            public void onAddToCartClick(ProductModel product) {
+                customerProductFragment.this.onAddToCartClick(product);
+            }
 
-            Bundle args = new Bundle();
-            args.putString("productName", selectedProduct.getName());
-            args.putString("price", selectedProduct.getPrice());
-            args.putString("status", selectedProduct.getStatus());
-            args.putString("imageUrl", selectedProduct.getImageUrl());
-            args.putString("quantity", selectedProduct.getQuantity());
-            args.putString("description", selectedProduct.getDescription());
+            @Override
+            public void editProductData(int position) {
+                // Handle editing product data
+                ProductModel selectedProduct = productList.get(position);
+                ProductDetailsFragment productDetailsFragment = new ProductDetailsFragment();
 
-            productDetailsFragment.setArguments(args);
+                Bundle args = new Bundle();
+                args.putString("productName", selectedProduct.getName());
+                args.putString("price", selectedProduct.getPrice());
+                args.putString("status", selectedProduct.getStatus());
+                args.putString("imageUrl", selectedProduct.getImageUrl());
+                args.putString("quantity", selectedProduct.getQuantity());
+                args.putString("description", selectedProduct.getDescription());
 
-            FragmentTransaction transaction = requireActivity().getSupportFragmentManager().beginTransaction();
-            transaction.replace(R.id.frame_layout, productDetailsFragment);
-            transaction.addToBackStack(null);
-            transaction.commit();
+                productDetailsFragment.setArguments(args);
+
+                FragmentTransaction transaction = requireActivity().getSupportFragmentManager().beginTransaction();
+                transaction.replace(R.id.frame_layout, productDetailsFragment);
+                transaction.addToBackStack(null);
+                transaction.commit();
+            }
         };
 
         // Initialize ProductAdapter
@@ -166,25 +175,26 @@ public class customerProductFragment extends Fragment {
 
 
 
-//    public void onAddToCartClick(int pos) {
-//        // Get the menu item (product) from the filtered list at the position
-//        ProductModel product = filteredList.get(pos); // Assuming filteredList contains the list of products
-//
-//        // Add the item to the cart
-//        Cart.addItem(product); // Assuming cart is an object that holds the items
-//
-//        // Show a confirmation toast
-//        Toast.makeText(getContext(), "Added to cart successfully", Toast.LENGTH_SHORT).show();
-//
-//        // Notify the CartFragment of the change if it's visible
-//        Home activity = (Home) getActivity();  // Ensure the activity is of type Home
-//        CartFragment cartFragment = (CartFragment) activity.getSupportFragmentManager().findFragmentById(R.id.cart);
-//
-//        // Check if the CartFragment is visible
-//        if (cartFragment != null && cartFragment.isVisible()) {
-//            cartFragment.updateCart();  // Update the cart in the fragment
-//        }
-//    }
+    public void onAddToCartClick(ProductModel product) {
+        // Create a CartItem from the product
+        CartItem cartItem = new CartItem(product.getName(), product.getPrice(), 1, product.getImageUrl().getBytes()); // Assuming imageUrl is a String
+
+        // Add the item to the cart
+        Home activity = (Home) getActivity(); // Ensure the activity is of type Home
+        Cart cart = activity.getCart(); // Get the shared cart instance
+        cart.addItem(cartItem); // Add the CartItem to the cart
+
+        // Show a confirmation toast
+        Toast.makeText(getContext(), "Added to cart successfully", Toast.LENGTH_SHORT).show();
+
+        // Notify the CartFragment of the change if it's visible
+        CartFragment cartFragment = (CartFragment) activity.getSupportFragmentManager().findFragmentById(R.id.cart);
+
+        // Check if the CartFragment is visible
+        if (cartFragment != null && cartFragment.isVisible()) {
+            cartFragment.updateCart(); // Update the cart in the fragment
+        }
+    }
 
 
 

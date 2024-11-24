@@ -35,8 +35,8 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
     @NonNull
     @Override
     public ProductAdapter.ProductViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View itemview = LayoutInflater.from(parent.getContext()).inflate(R.layout.customer_item_product,parent, false );
-        return new com.example.livo.customer.Products.ProductAdapter.ProductViewHolder(itemview, recyclerViewInterface);
+        View itemview = LayoutInflater.from(parent.getContext()).inflate(R.layout.customer_item_product, parent, false);
+        return new ProductViewHolder(itemview, recyclerViewInterface);
     }
 
     @Override
@@ -49,14 +49,15 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
                 .load(productModel.getImageUrl())
                 .placeholder(R.drawable.baseline_image_24)
                 .error(R.drawable.error_image)
-                        .into(holder.ProductImage);
+                .into(holder.ProductImage);
     }
 
     @Override
     public int getItemCount() {
         return productList.size();
     }
-    public class ProductViewHolder extends RecyclerView.ViewHolder{
+
+    public class ProductViewHolder extends RecyclerView.ViewHolder {
         public ImageView ProductImage;
         public TextView ProductName;
         public TextView ProductPrice;
@@ -64,34 +65,37 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
         public Button moreDetails;
         public ImageButton addCart;
 
-        public ProductViewHolder(@NonNull View itemview, RecyclerViewInterfaceCus recyclerViewInterface){
-            super(itemview);
-            ProductImage = itemview.findViewById(R.id.product_image);
-            ProductName = itemview.findViewById(R.id.product_name);
-            ProductPrice = itemview.findViewById(R.id.product_price);
-            ProductStatus = itemview.findViewById(R.id.product_status);
-            moreDetails = itemview.findViewById(R.id.btn_products);
-            addCart = itemview.findViewById(R.id.add_cart);
+        public ProductViewHolder(@NonNull View itemView, RecyclerViewInterfaceCus recyclerViewInterface) {
+            super(itemView);
+            ProductImage = itemView.findViewById(R.id.product_image);
+            ProductName = itemView.findViewById(R.id.product_name);
+            ProductPrice = itemView.findViewById(R.id.product_price);
+            ProductStatus = itemView.findViewById(R.id.product_status);
+            moreDetails = itemView.findViewById(R.id.btn_products);
+            addCart = itemView.findViewById(R.id.add_cart);
 
             moreDetails.setOnClickListener(view -> {
-                if (recyclerViewInterface != null){
+                if (recyclerViewInterface != null) {
                     int position = getAdapterPosition();
-                    if(position != RecyclerView.NO_POSITION){
+                    if (position != RecyclerView.NO_POSITION) {
                         recyclerViewInterface.editProductData(position);
                     }
                 }
             });
 
-//            addCart.setOnClickListener(view -> {
-//                int position = getAdapterPosition();
-//                if (position != RecyclerView.NO_POSITION) {
-//                    // Call your onAddToCartClick method with the product at the given position
-//                    onAddToCartClick(position);
-//            });
-
-
+            // Add the product to cart when the "Add to Cart" button is clicked
+            addCart.setOnClickListener(view -> {
+                int position = getAdapterPosition();
+                if (position != RecyclerView.NO_POSITION) {
+                    ProductModel product = productList.get(position);
+                    if (recyclerViewInterface != null) {
+                        recyclerViewInterface.onAddToCartClick(product);
+                    }
+                }
+            });
         }
     }
 }
+
 
 
