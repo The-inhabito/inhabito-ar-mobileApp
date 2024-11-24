@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:title="home"
+        android:icon="@drawable/home_icon"
+        android:id="@+id/home" />
+    <item
+        android:title="Company"
+        android:icon="@drawable/company"
+        android:id="@+id/company" />
+
+    <item
+        android:title="Cusomter"
+        android:icon="@drawable/baseline_account_circle_24"
+        android:id="@+id/customer" />
+    <item
+        android:title="Notification"
+        android:icon="@drawable/bell_icon"
+        android:id="@+id/notify" />
+</menu>
