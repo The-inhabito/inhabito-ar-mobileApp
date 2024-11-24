@@ -5,7 +5,8 @@
     <uses-feature
         android:name="android.hardware.camera"
         android:required="false" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -21,14 +22,23 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.LIVO"
         tools:targetApi="31">
-
+        <activity
+            android:name=".customer.Products.paymentActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity_payment"
+            android:exported="false" />
+        <activity
+            android:name=".admin.adminFragments.AdminCompanyDetails"
+            android:exported="false" />
         <activity
             android:name=".company.viewModel.ViewModelActivity"
             android:exported="false" />
         <!--
               <activity
                   android:name=".company.ARActivity"
-                  android:exported="false" /> -->
+                  android:exported="false" />
+        -->
         <activity
             android:name=".company.CompanyEditProductDetails"
             android:exported="false" />
@@ -68,7 +78,9 @@
         <activity
             android:name=".admin.AdminMainActivity"
             android:exported="false" />
-
+        <activity
+            android:name=".admin.adminFragments.AdminViewCompanyFragment"
+            android:exported="false" />
         <activity
             android:name=".MainActivity"
             android:exported="true">
