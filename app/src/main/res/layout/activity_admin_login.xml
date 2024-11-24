@@ -7,26 +7,19 @@
     android:background="@drawable/adminbg1"
     android:orientation="vertical"
     tools:context=".admin.AdminLogin">
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="120dp"
+                android:gravity="center"
                 android:orientation="vertical"
                 android:padding="20dp">
 
 
                 <EditText
                     android:id="@+id/login_email"
-                    android:layout_width="350dp"
+                    android:layout_width="250dp"
                     android:layout_height="60dp"
                     android:layout_marginTop="30dp"
                     android:background="@drawable/admin_border"
@@ -37,7 +30,7 @@
 
                 <EditText
                     android:id="@+id/login_password"
-                    android:layout_width="350dp"
+                    android:layout_width="250dp"
                     android:layout_height="60dp"
                     android:layout_marginTop="20dp"
                     android:background="@drawable/admin_border"
@@ -49,25 +42,11 @@
 
                 <Button
                     android:id="@+id/login_button"
-                    android:layout_width="350dp"
+                    android:layout_width="250dp"
                     android:layout_height="70dp"
                     android:layout_marginTop="30dp"
                     android:text="Login"
                     android:textSize="18sp"
                     app:cornerRadius="30dp" />
-
-                <TextView
-                    android:id="@+id/signupRedirectText"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginTop="14dp"
-                    android:padding="8dp"
-                    android:text="Not yet registered? Signup"
-                    android:textColor="@color/black"
-                    android:textSize="19sp" />
-
             </LinearLayout>
-        </LinearLayout>
-    </ScrollView>
 </LinearLayout>
