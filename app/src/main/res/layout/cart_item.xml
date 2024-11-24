@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:padding="20dp"
+    android:layout_margin="10dp"
+    android:background="@drawable/black_border_box"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/product_image"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        app:shapeAppearanceOverlay="@style/roundimageView"
+        android:scaleType="centerCrop"
+        android:background="@drawable/upload"
+        android:layout_gravity="center" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:padding="10dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/product_name"
+            android:textColor="@color/black"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:text="product name"
+            android:textStyle="bold" />
+
+        <TextView
+            android:textColor="@color/black"
+            android:id="@+id/product_price"
+            android:layout_width="wrap_content"
+            android:text="price"
+            android:layout_height="wrap_content"
+            android:textSize="14sp" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/btn_increment"
+                android:background="@drawable/add_icon"
+                android:layout_width="20dp"
+                android:layout_marginRight="5dp"
+                android:layout_height="20dp" />
+
+            <TextView
+                android:textColor="@color/black"
+                android:id="@+id/product_quantity"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="16sp"
+                android:text="1" /> <!-- Default quantity -->
+
+            <ImageButton
+                android:id="@+id/btn_decrement"
+                android:background="@drawable/remove_icon"
+                android:layout_width="20dp"
+                android:layout_marginLeft="5dp"
+                android:layout_height="20dp" />
+
+
+
+            <ImageButton
+                android:layout_marginLeft="10dp"
+                android:id="@+id/btn_remove"
+                android:layout_width="25dp"
+                android:background="@drawable/delete_icon"
+                android:layout_height="25dp" />
+        </LinearLayout>
+    </LinearLayout>
+
+</LinearLayout>
