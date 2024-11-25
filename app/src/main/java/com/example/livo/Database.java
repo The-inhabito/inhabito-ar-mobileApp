@@ -1,6 +1,5 @@
 package com.example.livo;
 
-import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -9,19 +8,13 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.graphics.Bitmap;
 import android.util.Log;
 
-import androidx.annotation.Nullable;
-
 //import com.example.livo.company.order.OrderModelClass;
-import com.example.livo.customer.CompanyModel;
 import com.example.livo.customer.CustomerSession;
-import com.example.livo.customer.ProductModel;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 public class Database extends SQLiteOpenHelper {
 
@@ -94,24 +87,6 @@ public class Database extends SQLiteOpenHelper {
                 ")";
         db.execSQL(createTableQuery4);
 
-        String createTableQuery5 = "CREATE TABLE companies (" +
-                "companyID INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                "companyEmail TEXT, " +
-                "password TEXT, " +
-                "status TEXT);";
-        db.execSQL(createTableQuery5);
-
-        String createTableQuery6 = "CREATE TABLE companyData (" +
-                "companyEmail TEXT PRIMARY KEY, " +
-                "companyName TEXT, " +
-                "companyAddress TEXT, " +
-                "companyContactNo TEXT, " +
-                "companyID INTEGER," +
-                "imageUrl TEXT," +
-                "CONSTRAINT fk_companyID FOREIGN KEY (companyID) REFERENCES companies(companyID) ON DELETE CASCADE" +
-                ");";
-        db.execSQL(createTableQuery6);
-
     }
 
     public void fetchProductsFromFirebaseAndInsert(final String companyID) {
@@ -169,102 +144,6 @@ public class Database extends SQLiteOpenHelper {
         }
     }
 
-    public List<ProductModel> getProductsByCompanyId(String companyId) {
-        List<ProductModel> productList = new ArrayList<>();
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = null;
-
-        try {
-            String query = "SELECT * FROM products WHERE companyID = ?";
-            cursor = db.rawQuery(query, new String[]{companyId});
-
-            if (cursor.moveToFirst()) {
-                do {
-                    String productId = cursor.getString(cursor.getColumnIndexOrThrow("productId"));
-                    String name = cursor.getString(cursor.getColumnIndexOrThrow("name"));
-                    double price = cursor.getDouble(cursor.getColumnIndexOrThrow("price"));
-                    String description = cursor.getString(cursor.getColumnIndexOrThrow("description"));
-                    String imageUrl = cursor.getString(cursor.getColumnIndexOrThrow("imageUrl"));
-                    String modelUrl = cursor.getString(cursor.getColumnIndexOrThrow("modelUrl"));
-                    int quantity = cursor.getInt(cursor.getColumnIndexOrThrow("quantity"));
-
-                    ProductModel product = new ProductModel(productId, name, price, description, imageUrl, modelUrl,quantity);
-                    productList.add(product);
-                } while (cursor.moveToNext());
-            }
-        } catch (Exception e) {
-            Log.e("DatabaseError", "Error fetching products: ", e);
-        } finally {
-            if (cursor != null) {
-                cursor.close();
-            }
-            db.close();
-        }
-
-        return productList;
-    }
-
-
-    private void insertCompanyIntoSQLite(SQLiteDatabase db, String companyEmail, String companyName, String imageUrl) {
-        ContentValues values = new ContentValues();
-        values.put("company_id", companyEmail);
-        values.put("name", companyName);
-        values.put("email", imageUrl);
-
-        long result = db.insertWithOnConflict("companyData", null, values, SQLiteDatabase.CONFLICT_REPLACE);
-        if (result == -1) {
-            Log.d("SQLiteError", "Failed to insert company: " + companyName);
-        }
-    }
-
-    public void fetchCompaniesFromFirebaseAndInsert(final String companyID) {
-        firestore.collection("companyData")
-                .get()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        SQLiteDatabase db = this.getWritableDatabase();
-                        db.beginTransaction();
-                        try {
-                            for (QueryDocumentSnapshot document : task.getResult()) {
-                                String companyEmail = document.getString("companyEmail");
-                                String companyName = document.getString("companyName");
-                                String cImage = document.getString("imageUrl");
-
-                                // Insert into SQLite
-                                insertCompanyIntoSQLite(db, companyEmail, companyName, cImage);
-                            }
-                            db.setTransactionSuccessful();
-                        } catch (Exception e) {
-                            Log.e(TAG, "Error inserting companies: ", e);
-                        } finally {
-                            db.endTransaction();
-                            db.close();
-                        }
-                    } else {
-                        Log.e(TAG, "Error fetching companies: ", task.getException());
-                    }
-                });
-
-    }
-
-
-
-    // Method to insert product into SQLite
-//    private void insertProductIntoSQLite(String productId, String productName, double price) {
-//        SQLiteDatabase db = this.getWritableDatabase();
-//        ContentValues contentValues = new ContentValues();
-//        contentValues.put("product_id", productId);
-//        contentValues.put("product_name", productName);
-//        contentValues.put("price", price);
-//
-//        long result = db.insert("order_items", null, contentValues);
-//        if (result == -1) {
-//            Log.d("SQLiteError", "Failed to insert data");
-//        } else {
-//            Log.d("SQLiteSuccess", "Data inserted successfully");
-//        }
-//        db.close();
-//    }
 
     @Override
     public void onConfigure(SQLiteDatabase db) {
@@ -422,59 +301,88 @@ public class Database extends SQLiteOpenHelper {
         );
     }
 
-
-
-    //order TABLE OPERATIONS
-    public boolean insertOrders(Double total_price, String order_status, String created_at) {
+    //ORDER TABLE OPERATIONS
+    // Insert into orders table
+    public long insertOrder(int userId, double totalPrice, String orderStatus, String companyEmail, String createdAt) {
         SQLiteDatabase db = this.getWritableDatabase();
+        long orderId = -1;
         try {
             ContentValues values = new ContentValues();
+            values.put("user_id", userId);
+            values.put("total_price", totalPrice);
+            values.put("order_status", orderStatus);
+            values.put("company_email", companyEmail);
+            values.put("created_at", createdAt);
 
-            values.put("total_price", total_price);
-            values.put("order_status", order_status);
-            values.put("created_at", created_at);
-
-            // Insert the values into the 'orders' table
-            long id = db.insert("orders", null, values);
-            if (id != -1) {
-                Log.d(TAG, "Order inserted successfully");
-                return true;
+            orderId = db.insert("orders", null, values);
+            if (orderId != -1) {
+                Log.d(TAG, "Order inserted successfully with ID: " + orderId);
             } else {
                 Log.e(TAG, "Error inserting order");
-                return false;
             }
         } catch (Exception e) {
             Log.e(TAG, "Error inserting order: " + e.getMessage());
-            return false;
         }
+        return orderId; // Return the order ID for foreign key usage
     }
 
-    //orderItems TABLE OPERATIONS
-    public boolean insertOrderItems(int quantity, String created_at){
+    // Insert into order_items table
+    public boolean insertOrderItem(long orderId, int productId, String productName, int quantity, double price, String createdAt) {
         SQLiteDatabase db = this.getWritableDatabase();
         try {
             ContentValues values = new ContentValues();
-
+            values.put("order_id", orderId);
+            values.put("product_id", productId);
+            values.put("product_name", productName);
             values.put("quantity", quantity);
-            values.put("created_at", created_at);
+            values.put("price", price);
+            values.put("created_at", createdAt);
 
-            // Insert the values into the 'orders' table
-            long id = db.insert("orders", null, values);
+            long id = db.insert("order_items", null, values);
             if (id != -1) {
-                Log.d(TAG, "Order inserted successfully");
+                Log.d(TAG, "Order item inserted successfully with ID: " + id);
                 return true;
             } else {
-                Log.e(TAG, "Error inserting order");
+                Log.e(TAG, "Error inserting order item");
                 return false;
             }
         } catch (Exception e) {
-            Log.e(TAG, "Error inserting order: " + e.getMessage());
+            Log.e(TAG, "Error inserting order item: " + e.getMessage());
             return false;
         }
     }
 
+    public boolean saveOrder(int userId, double totalAmount, String orderStatus, String companyEmail, String createdAt) {
+        SQLiteDatabase db = this.getWritableDatabase();
 
-   // Comapny side db
+        ContentValues values = new ContentValues();
+        values.put("user_id", userId);
+        values.put("total_amount", totalAmount);
+        values.put("status", orderStatus);
+        values.put("company_email", companyEmail);
+        values.put("created_at", createdAt);
+
+        long orderId = db.insert("Orders", null, values);
+        return orderId != -1; // Returns true if the order was saved successfully
+    }
+
+    public boolean saveOrderItem(String productId, int quantity, double price, double totalPrice, String createdAt) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put("product_id", productId);
+        values.put("quantity", quantity);
+        values.put("price", price);
+        values.put("total_price", totalPrice);
+        values.put("created_at", createdAt);
+
+        long result = db.insert("OrderItems", null, values);
+        return result != -1; // Returns true if the order item was saved successfully
+    }
+
+
+
+     Comapny side db
     public List<OrderModelClass> getOrdersByCompanyEmail(String companyEmail) {
         SQLiteDatabase db = this.getReadableDatabase();
         List<OrderModelClass> orderList = new ArrayList<>();
@@ -497,8 +405,6 @@ public class Database extends SQLiteOpenHelper {
         cursor.close();
         return orderList;
     }
-
-
 
 
 }

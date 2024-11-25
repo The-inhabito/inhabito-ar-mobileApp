@@ -1,5 +1,7 @@
 package com.example.livo.customer.Products;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -26,6 +28,9 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+
+import java.io.ByteArrayOutputStream;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -176,8 +181,13 @@ public class customerProductFragment extends Fragment {
 
 
     public void onAddToCartClick(ProductModel product) {
+
+        double price = Double.parseDouble(product.getPrice());
+        String imageUrl = product.getImageUrl();
+        String productId = product.getProductID(); // Keep it as String
+
         // Create a CartItem from the product
-        CartItem cartItem = new CartItem(product.getName(), product.getPrice(), 1, product.getImageUrl().getBytes()); // Assuming imageUrl is a String
+        CartItem cartItem = new CartItem(productId, product.getName(), 1, price, imageUrl); // Pass the price as a double
 
         // Add the item to the cart
         Home activity = (Home) getActivity(); // Ensure the activity is of type Home
@@ -195,6 +205,20 @@ public class customerProductFragment extends Fragment {
             cartFragment.updateCart(); // Update the cart in the fragment
         }
     }
+
+    public byte[] getImageBytesFromUrl(String imageUrl) {
+        try {
+            URL url = new URL(imageUrl);
+            Bitmap bitmap = BitmapFactory.decodeStream(url.openConnection().getInputStream());
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
+            return byteArrayOutputStream.toByteArray();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
 
 
 

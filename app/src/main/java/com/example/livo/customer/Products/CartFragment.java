@@ -19,13 +19,15 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.livo.R;
 import com.example.livo.customer.Home;
 
+import java.util.ArrayList;
+
 public class CartFragment extends Fragment {
     private RecyclerView recyclerView;
     private CartAdapter cartAdapter;
     private Cart cart;
     private Button payButton;
     private TextView totalAmountTextView;
-    private ImageView productImgImageView;
+    private ImageView productImageView;
     private TextView emptyCartMessage;
 
     @Nullable
@@ -50,6 +52,7 @@ public class CartFragment extends Fragment {
                 Toast.makeText(getContext(), "Your cart is empty!", Toast.LENGTH_SHORT).show();
             } else {
                 Intent intent = new Intent(getActivity(), paymentActivity.class);
+                intent.putParcelableArrayListExtra("cartItems", new ArrayList<>(cart.getItems())); // Pass cart items
                 intent.putExtra("totalAmount", cart.calculateTotalAmount());
                 startActivity(intent);
             }
