@@ -1,17 +1,18 @@
 package com.example.livo.customer.Products;
 
-import android.content.Context;
-import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.bumptech.glide.Glide;
 import com.example.livo.R;
+import com.google.android.material.imageview.ShapeableImageView;
+
 import java.util.List;
 
 public class CartAdapter extends RecyclerView.Adapter<CartAdapter.MyViewHolder>{
@@ -36,16 +37,27 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.MyViewHolder>{
         CartItem cartItem = cartItems.get(position);
 
         // Bind data to views
-        holder.productName.setText(cartItem.getName());
+        holder.productName.setText(cartItem.getProductName());
         holder.productPrice.setText("Rs " + cartItem.getPrice());
-        holder.productImage.setImageBitmap(BitmapFactory.decodeByteArray(cartItem.getImage(), 0, cartItem.getImage().length));
+
+        String imageUrl = cartItem.getImageUrl();
+        if (imageUrl != null && !imageUrl.isEmpty()) {
+            // Load the image from URL using Glide
+            Glide.with(holder.productImage.getContext())
+                    .load(imageUrl)  // Load the image URL into the ImageView
+                    .into(holder.productImage);
+        } else {
+            // Use a placeholder image if URL is null or empty
+            holder.productImage.setImageResource(R.drawable.upload);
+        }
+
         holder.productQuantity.setText(String.valueOf(cartItem.getQuantity()));
 
-        // Set click listeners
+        // Set click listeners for buttons
         holder.btnRemove.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int adapterPosition = holder.getAdapterPosition(); // Get the latest position
+                int adapterPosition = holder.getAdapterPosition();
                 if (adapterPosition != RecyclerView.NO_POSITION) {
                     cartItems.remove(adapterPosition);
                     notifyItemRemoved(adapterPosition);
@@ -58,7 +70,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.MyViewHolder>{
         holder.btnIncrement.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int adapterPosition = holder.getAdapterPosition(); // Get the latest position
+                int adapterPosition = holder.getAdapterPosition();
                 if (adapterPosition != RecyclerView.NO_POSITION) {
                     CartItem currentItem = cartItems.get(adapterPosition);
                     int newQuantity = currentItem.getQuantity() + 1;
@@ -73,7 +85,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.MyViewHolder>{
         holder.btnDecrement.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int adapterPosition = holder.getAdapterPosition(); // Get the latest position
+                int adapterPosition = holder.getAdapterPosition();
                 if (adapterPosition != RecyclerView.NO_POSITION) {
                     CartItem currentItem = cartItems.get(adapterPosition);
                     int newQuantity = currentItem.getQuantity() - 1;
@@ -103,13 +115,13 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.MyViewHolder>{
     private void updateTotalAmount() {
         double totalAmount = 0;
         for (CartItem item : cartItems) {
-            totalAmount += Double.parseDouble(item.getPrice()) * item.getQuantity();
+            totalAmount += Double.parseDouble(String.valueOf(item.getPrice())) * item.getQuantity();
         }
         totalAmountTextView.setText("Total: Rs " + totalAmount);
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
-        public ImageView productImage;
+        public ShapeableImageView productImage;
         public TextView productName;
         public TextView productPrice;
         public ImageButton btnDecrement;

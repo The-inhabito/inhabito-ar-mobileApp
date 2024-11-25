@@ -12,7 +12,6 @@ public class Cart {
         items = new ArrayList<>();
     }
 
-    // Method to calculate total amount
     public boolean calculateTotalAmount() {
         if (items.isEmpty()) {
             return false; // Return false if cart is empty
@@ -20,12 +19,14 @@ public class Cart {
 
         double total = 0.0;
         for (CartItem item : items) {
-            total += Integer.parseInt(item.getPrice()) * item.getQuantity();
+            // Parse the price as a double and then multiply by quantity
+            total += Double.parseDouble(String.valueOf(item.getPrice())) * item.getQuantity();
         }
 
         System.out.println("Total Amount: " + total); // Log the total for debugging
         return true; // Return true if calculation is successful
     }
+
 
     // Add a getter for items
     public List<CartItem> getItems() {

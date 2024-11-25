@@ -56,10 +56,10 @@
             android:textSize="16sp" />
 
         <Button
-            android:id="@+id/arButton"
+            android:id="@+id/threeD"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="View in AR" />
+            android:text="View in 3D" />
     </LinearLayout>
 </ScrollView>

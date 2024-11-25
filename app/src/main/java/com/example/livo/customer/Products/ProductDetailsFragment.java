@@ -1,5 +1,6 @@
 package com.example.livo.customer.Products;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,7 +16,7 @@ import com.bumptech.glide.Glide;
 import com.example.livo.R;
 
 public class ProductDetailsFragment extends Fragment {
-    private String productName, price, description, imageUrl, quantity;
+    private String productName, price, description, imageUrl, quantity, modelUrl;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -25,6 +26,7 @@ public class ProductDetailsFragment extends Fragment {
             price = getArguments().getString("price");
             description = getArguments().getString("description");
             imageUrl = getArguments().getString("imageUrl");
+            modelUrl = getArguments().getString("modelUrl");
             quantity = getArguments().getString("quantity");
         }
     }
@@ -40,7 +42,7 @@ public class ProductDetailsFragment extends Fragment {
         TextView descriptionTextView = view.findViewById(R.id.descriptionTextView);
         TextView quantityTextView = view.findViewById(R.id.quantityTextView);
         ImageView productImageView = view.findViewById(R.id.productImageView);
-        Button arButton = view.findViewById(R.id.arButton);
+        Button threeD = view.findViewById(R.id.threeD);
 
         productNameTextView.setText(productName);
         priceTextView.setText(String.format("Price: Rs%s", price));
@@ -53,8 +55,8 @@ public class ProductDetailsFragment extends Fragment {
                 .placeholder(R.drawable.baseline_image_24)
                 .into(productImageView);
 
-        // Handle AR button click
-//        arButton.setOnClickListener(v -> {
+        // Handle 3D button click
+//        threeD.setOnClickListener(v -> {
 //            if (modelUrl != null && !modelUrl.isEmpty()) {
 //                Intent intent = new Intent(getContext(), ARViewActivity.class);
 //                intent.putExtra("modelUrl", modelUrl);
