@@ -1,6 +1,5 @@
 package com.example.livo.customer;
 
-import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
@@ -11,12 +10,11 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.example.livo.R;
 import com.example.livo.customer.Products.Cart;
-//import com.example.livo.customer.Products.CartFragment;
 import com.example.livo.customer.Products.CartFragment;
 import com.example.livo.databinding.ActivityCustomerHomeBinding;
 
 public class Home extends AppCompatActivity {
-    ActivityCustomerHomeBinding binding;
+    private ActivityCustomerHomeBinding binding;
     private Cart cart;
 
     @Override
@@ -26,25 +24,44 @@ public class Home extends AppCompatActivity {
         setContentView(binding.getRoot());
         cart = new Cart();
 
+        // Load HomeFragment by default when the activity starts for the first time
+        if (savedInstanceState == null) {
+            replaceFragment(new HomeFragment());
+            binding.bottomNavigationView.setSelectedItemId(R.id.home); // Highlight the Home button
+        }
+
+        // Handle bottom navigation view item selection
         binding.bottomNavigationView.setOnItemSelectedListener(item -> {
-            Fragment fragment = new Fragment();
-            int itemId = item.getItemId();
-            if (itemId == R.id.home) {
-                fragment = new HomeFragment();
-            } else if (itemId == R.id.cart) {
-                fragment = new CartFragment();
-            } else if (itemId == R.id.profile) {
-                fragment = new ProfileFragment();
-            } else if (itemId == R.id.notify) {
-//                Intent intent = new Intent(Home.this, ProfileFragment.class);
-//                startActivity(intent);
-            } else {
-                fragment = new HomeFragment();
+            Fragment selectedFragment = getSelectedFragment(item.getItemId());
+            if (selectedFragment != null) {
+                replaceFragment(selectedFragment);
             }
-            replaceFragment(fragment);
             return true;
         });
     }
+
+    /**
+     * Determines the fragment to load based on the selected menu item ID.
+     *
+     * @param itemId The selected menu item's ID.
+     * @return The fragment to load.
+     */
+    @Nullable
+    private Fragment getSelectedFragment(int itemId) {
+        if (itemId == R.id.home) {
+            return new HomeFragment();
+        } else if (itemId == R.id.cart) {
+            return new CartFragment();
+        } else if (itemId == R.id.profile) {
+            return new ProfileFragment();
+//        } else if (itemId == R.id.notify) {
+//            return new OrderFragment();
+//        }
+        } else {
+            return null;
+        }
+    }
+
     private void replaceFragment(Fragment fragment) {
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();

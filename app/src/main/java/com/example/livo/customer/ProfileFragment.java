@@ -11,6 +11,7 @@ import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -21,6 +22,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.example.livo.Database;
+import com.example.livo.MainActivity;
 import com.example.livo.R;
 import com.example.livo.databinding.FragmentCustomerProfileBinding;
 
@@ -31,10 +33,12 @@ public class ProfileFragment extends Fragment {
     private Database database;
     private Bitmap profileImageBitmap;
     private int userId;
+    private CustomerSession customerSession;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentCustomerProfileBinding.inflate(inflater, container, false);
+        View view = binding.getRoot(); // Use the binding's root view
         database = new Database(requireContext());
 
         // Get the user ID from session
@@ -57,12 +61,24 @@ public class ProfileFragment extends Fragment {
         loadUserData();
 
         // Set up the image picker
-        binding.profileImage.setOnClickListener(view -> openImagePicker());
+        binding.profileImage.setOnClickListener(view1 -> openImagePicker());
 
         // Set up the update button
-        binding.updateProfileButton.setOnClickListener(view -> updateUserData());
+        binding.updateProfileButton.setOnClickListener(view1 -> updateUserData());
 
-        return binding.getRoot();
+        // Set up the logout button
+        Button btnLogout = view.findViewById(R.id.btn_logout);
+        btnLogout.setOnClickListener(v -> {
+            // Call clearSession from CustomerSession
+            session.clearSession();
+
+            // Redirect to MainActivity
+            Intent intent = new Intent(requireActivity(), MainActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+        });
+
+        return view; // Return the root view
     }
 
     private void loadUserData() {

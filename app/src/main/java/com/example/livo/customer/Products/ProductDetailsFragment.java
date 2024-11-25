@@ -16,7 +16,7 @@ import com.bumptech.glide.Glide;
 import com.example.livo.R;
 
 public class ProductDetailsFragment extends Fragment {
-    private String productName, price, description, imageUrl, quantity, modelUrl;
+    private String productName, price, description, imageUrl, quantity;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -26,7 +26,6 @@ public class ProductDetailsFragment extends Fragment {
             price = getArguments().getString("price");
             description = getArguments().getString("description");
             imageUrl = getArguments().getString("imageUrl");
-            modelUrl = getArguments().getString("modelUrl");
             quantity = getArguments().getString("quantity");
         }
     }
@@ -54,17 +53,6 @@ public class ProductDetailsFragment extends Fragment {
                 .load(imageUrl)
                 .placeholder(R.drawable.baseline_image_24)
                 .into(productImageView);
-
-        // Handle 3D button click
-//        threeD.setOnClickListener(v -> {
-//            if (modelUrl != null && !modelUrl.isEmpty()) {
-//                Intent intent = new Intent(getContext(), ARViewActivity.class);
-//                intent.putExtra("modelUrl", modelUrl);
-//                startActivity(intent);
-//            } else {
-//                Toast.makeText(getContext(), "AR model not available", Toast.LENGTH_SHORT).show();
-//            }
-//        });
 
         return view;
     }
