@@ -95,18 +95,18 @@ public class HomeFragment extends Fragment {
     private void filter(String text) {
         filteredList.clear(); // Clear the filtered list
         if (text.isEmpty()) {
-            // If search text is empty, show all items
-            filteredList.addAll(itemList);
+            filteredList.addAll(itemList); // Show all items when search text is empty
         } else {
-            // Filter items based on the company name
             for (CompanyModel item : itemList) {
                 if (item.getCompanyName().toLowerCase().contains(text.toLowerCase())) {
                     filteredList.add(item);
                 }
             }
         }
-        companyAdapter.notifyDataSetChanged(); // Notify the adapter about data changes
+        Log.d("HomeFragment", "Filtered list size: " + filteredList.size());
+        companyAdapter.notifyDataSetChanged(); // Notify the adapter of changes
     }
+
 
     private void fetchCompanyData() {
         DatabaseReference companyDataRef = FirebaseDatabase.getInstance().getReference("companyData");
@@ -114,7 +114,7 @@ public class HomeFragment extends Fragment {
         companyDataRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                itemList.clear(); // Clear any existing data
+                itemList.clear();
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     String companyName = dataSnapshot.child("companyName").getValue(String.class);
                     String imageUrl = dataSnapshot.child("imageUrl").getValue(String.class);
@@ -122,12 +122,14 @@ public class HomeFragment extends Fragment {
 
                     if (companyName != null && imageUrl != null) {
                         CompanyModel companyObject = new CompanyModel(companyName, imageUrl, companyEmail);
-                        itemList.add(companyObject); // Add to full list
+                        itemList.add(companyObject);
                     }
                 }
                 filteredList.clear();
-                filteredList.addAll(itemList); // Initially show all items
+                filteredList.addAll(itemList);
                 companyAdapter.notifyDataSetChanged();
+
+                Log.d("HomeFragment", "Fetched " + itemList.size() + " companies");
             }
 
             @Override
@@ -136,5 +138,6 @@ public class HomeFragment extends Fragment {
             }
         });
     }
+
 
 }

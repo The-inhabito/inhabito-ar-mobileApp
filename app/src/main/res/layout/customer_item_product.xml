@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
-    android:layout_height="300dp"
+    android:layout_height="350dp"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_margin="5dp"
     android:padding="10dp"
@@ -45,17 +45,19 @@
         android:textSize="10sp"
         android:textColor="@color/green"
         android:text="product status"
+        android:textStyle="bold"
         android:maxLines="1" />
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
+        android:gravity="center"
+        android:layout_marginTop="6dp"
         android:orientation="horizontal">
 
         <Button
             android:id="@+id/btn_products"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="40dp"
             android:layout_gravity="center"
             android:text="Details"
             android:layout_marginTop="4dp" />
@@ -66,8 +68,15 @@
             android:layout_height="30dp"
             android:layout_gravity="center"
             android:layout_marginTop="4dp"
-            android:layout_marginLeft="10dp"
+            android:layout_marginLeft="20dp"
             android:background="@drawable/add_icon" />
     </LinearLayout>
+    <Button
+        android:id="@+id/threeD"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:layout_gravity="center"
+        android:layout_marginTop="10dp"
+        android:text="View in 3D" />
 
 </LinearLayout>
