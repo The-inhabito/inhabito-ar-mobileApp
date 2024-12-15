@@ -54,10 +54,10 @@ public class Home extends AppCompatActivity {
             return new CartFragment();
         } else if (itemId == R.id.profile) {
             return new ProfileFragment();
-//        } else if (itemId == R.id.notify) {
-//            return new OrderFragment();
-//        }
-        } else {
+        } else if (itemId == R.id.notify) {
+            return new CustomerNotifyFragment();
+        }
+        else {
             return null;
         }
     }

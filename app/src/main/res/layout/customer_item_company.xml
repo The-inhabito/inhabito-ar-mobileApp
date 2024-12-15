@@ -32,15 +32,16 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="vertical">
 
         <Button
             android:id="@+id/btn_products"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:text="View Products >>>"
+            android:text="View Products"
             android:layout_marginTop="4dp" />
+
     </LinearLayout>
 
 </LinearLayout>

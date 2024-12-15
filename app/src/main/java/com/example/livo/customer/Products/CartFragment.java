@@ -2,6 +2,7 @@ package com.example.livo.customer.Products;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,8 +17,15 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.livo.Database;
 import com.example.livo.R;
+import com.example.livo.customer.CustomerSession;
 import com.example.livo.customer.Home;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
@@ -50,16 +58,116 @@ public class CartFragment extends Fragment {
         payButton.setOnClickListener(view1 -> {
             if (cart.getItems().isEmpty()) {
                 Toast.makeText(getContext(), "Your cart is empty!", Toast.LENGTH_SHORT).show();
-            } else {
-                Intent intent = new Intent(getActivity(), paymentActivity.class);
-                intent.putParcelableArrayListExtra("cartItems", new ArrayList<>(cart.getItems())); // Pass cart items
-                intent.putExtra("totalAmount", cart.calculateTotalAmount());
-                startActivity(intent);
+                return;
+            }
+
+            // Retrieve session email
+            CustomerSession session = CustomerSession.getInstance(getContext());
+            String email = session.getEmail();
+
+            if (email == null) {
+                Toast.makeText(getContext(), "User not logged in!", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            // Get user ID using email
+            Database dbHelper = new Database(getContext());
+            int userId = dbHelper.getUserIdByEmail(email);
+
+            if (userId == -1) {
+                Toast.makeText(getContext(), "User ID not found for email: " + email, Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            // Save order
+            double totalAmount = cart.calculateTotal();
+            String orderDate = java.text.DateFormat.getDateTimeInstance().format(new java.util.Date());
+
+            long orderId = dbHelper.saveOrder(userId, totalAmount, orderDate, null); // Pass userId here
+
+            if (orderId == -1) {
+                Toast.makeText(getContext(), "Failed to create order!", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            // Save order items
+            for (CartItem item : cart.getItems()) {
+                fetchCompanyEmail(item.getProductName(), new OnCompanyEmailFetchedListener() {
+                    @Override
+                    public void onSuccess(String companyEmail) {
+                        dbHelper.updateOrderWithCompanyEmail(orderId, companyEmail);
+                        dbHelper.saveOrderItem(orderId, item);
+                    }
+
+                    @Override
+                    public void onError(String errorMessage) {
+                        Toast.makeText(getContext(), "Error: " + errorMessage, Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+
+            Toast.makeText(getContext(), "Order placed successfully!", Toast.LENGTH_SHORT).show();
+            cart.clear();
+            updateCart();
+        });
+        return view;
+    }
+    private void fetchCompanyEmail(String productName, OnCompanyEmailFetchedListener listener) {
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("products");
+        databaseReference.orderByChild("name").equalTo(productName).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                        String companyId = snapshot.child("companyID").getValue(String.class);
+                        if (companyId != null) {
+                            Log.d("CartFragment", "CompanyId: " + companyId);
+                            listener.onSuccess(companyId);
+
+                            break;
+                        } else {
+                            listener.onError("Company ID not found");
+                        }
+
+
+
+                    }
+                } else {
+                    listener.onError("Product not found");
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                listener.onError(databaseError.getMessage());
             }
         });
+    }
 
-        updateCart();
-        return view;
+//    private void fetchCompanyEmailById(String companyId, OnCompanyEmailFetchedListener listener) {
+//        DatabaseReference companyRef = FirebaseDatabase.getInstance().getReference("companies").child(companyId);
+//        companyRef.addListenerForSingleValueEvent(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot snapshot) {
+//                if (snapshot.exists()) {
+//                    String companyEmail = snapshot.child("email").getValue(String.class);
+//                    listener.onSuccess(companyEmail);
+//                } else {
+//                    listener.onError("Company not found");
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError error) {
+//                listener.onError(error.getMessage());
+//            }
+//        });
+//    }
+
+    // Interface to handle asynchronous Firebase calls
+    interface OnCompanyEmailFetchedListener {
+        void onSuccess(String companyEmail);
+        void onError(String errorMessage);
     }
 
     public void updateCart() {

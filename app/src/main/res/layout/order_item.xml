@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="16dp"
+    android:layout_gravity="center"
+    android:background="@drawable/black_border_box"
+    android:layout_margin="12dp"
+    android:gravity="center_vertical"
+    android:elevation="4dp"
+   >
+
+    <!-- ImageView for the order icon -->
+    <ImageView
+        android:id="@+id/moreDetail"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_marginEnd="16dp"
+        app:srcCompat="@drawable/order"
+        android:contentDescription="Order Icon"
+        android:scaleType="centerCrop"
+        android:layout_gravity="center_vertical"/>
+
+    <!-- TextView for displaying order ID -->
+    <TextView
+        android:id="@+id/orderID"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="2"
+        android:text="Order ID"
+        android:textSize="16sp"
+        android:textColor="#212121"
+        android:gravity="start"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:layout_marginEnd="16dp"
+        android:textStyle="bold"
+        android:lineSpacingExtra="4dp"
+        android:paddingEnd="8dp"/>
+
+    <!-- Vertical LinearLayout containing the buttons -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_gravity="center_vertical">
+
+        <!-- Accept button -->
+        <ImageButton
+            android:id="@+id/accept"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginEnd="12dp"
+            app:srcCompat="@drawable/check"
+            android:contentDescription="Accept"
+            android:background="@drawable/button_background"
+            android:scaleType="centerInside"
+            app:tint="@android:color/white" />
+
+        <!-- Reject button -->
+        <ImageButton
+            android:id="@+id/reject"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            app:srcCompat="@drawable/reject"
+            android:contentDescription="Reject"
+            android:background="@drawable/button_background"
+            android:scaleType="centerInside"
+            app:tint="@android:color/white"/>
+    </LinearLayout>
+
+</LinearLayout>

@@ -56,5 +56,7 @@ public class CompanyDataModel {
     public void setImageUrl(String imageUrl) {
         ImageUrl = imageUrl;
     }
+
+
 }
 

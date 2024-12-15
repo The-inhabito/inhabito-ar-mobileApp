@@ -100,20 +100,19 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
         }
     }
 
-    @Override
-    public void onBindViewHolder(@NonNull com.example.livo.company.ProductAdapter.ProductViewHolder holder, int position) {
-        ProductModel product = productList.get(position);
-
-        holder.threeD.setOnClickListener(v -> {
-            Intent intentView = new Intent(context, ViewModelActivity.class);
-            intentView.putExtra("modelUrl", product.getModelUrl());
-            Log.d("ProductAdapter", "modelUrl: " + product.getModelUrl());
-
-            context.startActivity(intentView);
-        });
-
-    }
+//    @Override
+//    public void onBindViewHolder(@NonNull com.example.livo.company.ProductAdapter.ProductViewHolder holder, int position) {
+//        ProductModel product = productList.get(position);
+//
+//        holder.threeD.setOnClickListener(v -> {
+//            Intent intentView = new Intent(context, ViewModelActivity.class);
+//            intentView.putExtra("modelUrl", product.getModelUrl());
+//            Log.d("ProductAdapter", "modelUrl: " + product.getModelUrl());
+//
+//            context.startActivity(intentView);
+//        });
+//
+//    }
 }
-
 
 
