@@ -26,6 +26,19 @@ public class Cart {
         System.out.println("Total Amount: " + total); // Log the total for debugging
         return true; // Return true if calculation is successful
     }
+    public double calculateTotal() {
+        
+
+        double total = 0.0;
+        for (CartItem item : items) {
+            // Parse the price as a double and then multiply by quantity
+            total += Double.parseDouble(String.valueOf(item.getPrice())) * item.getQuantity();
+        }
+
+        System.out.println("Total Amount: " + total); // Log the total for debugging
+
+        return total;
+    }
 
 
     // Add a getter for items
@@ -41,6 +54,9 @@ public class Cart {
     // Remove item from the cart
     public void removeItem(CartItem item) {
         items.remove(item);
+    }
+
+    public void clear() {
     }
 }
 

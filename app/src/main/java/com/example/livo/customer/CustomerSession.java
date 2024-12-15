@@ -52,5 +52,5 @@ public class CustomerSession {
     // Check if there is an active session
     public boolean hasActiveSession() {
         return getEmail() != null;
-    }
+}
 }

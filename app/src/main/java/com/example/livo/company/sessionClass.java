@@ -7,7 +7,7 @@ public class sessionClass {
     private static sessionClass instance;
     private SharedPreferences sharedPreferences;
 
-    private sessionClass(Context context) {
+    public sessionClass(Context context) {
         sharedPreferences = context.getSharedPreferences("LivoUserSession", Context.MODE_PRIVATE);
     }
 

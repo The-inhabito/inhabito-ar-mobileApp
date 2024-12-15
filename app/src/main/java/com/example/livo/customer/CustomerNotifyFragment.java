@@ -1,13 +1,11 @@
-package com.example.livo.company;
+package com.example.livo.customer;
 
 import android.app.Dialog;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -17,13 +15,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.livo.Database;
 import com.example.livo.R;
-import com.example.livo.company.order.DialogProductAdapter;
-import com.example.livo.company.order.OrderAdapter;
-import com.example.livo.company.order.OrderModelClass;
+
 
 import java.util.List;
 
-public class CompanyNotifyFragment extends Fragment {
+public class CustomerNotifyFragment extends Fragment {
 
     private RecyclerView recyclerView;
     private OrderAdapter orderAdapter;
@@ -33,51 +29,24 @@ public class CompanyNotifyFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_company_notify, container, false);
+        View view = inflater.inflate(R.layout.fragment_customer_notify, container, false);
 
         // Initialize the RecyclerView
-        recyclerView = view.findViewById(R.id.recycler_view_orders);
+        recyclerView = view.findViewById(R.id.recycler_view_orders_cus);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
         // Initialize the database helper
         orderDbHelper = new Database(getActivity());
-        sessionClass session = sessionClass.getInstance(getActivity());
-        String companyEmail = session.getEmail();
+        CustomerSession session = CustomerSession.getInstance(getActivity());
+        String customerEmail = session.getEmail();
 
-        // Fetch orders by company email
-        List<OrderModelClass> orders = orderDbHelper.getOrdersByCompanyEmail(companyEmail);
+        // Fetch orders by customer email
+        List<CustomerOrderModelClass> orders = orderDbHelper.getOrdersByCustomerEmail(customerEmail);
 
         // Set up the adapter and attach it to the RecyclerView
         orderAdapter = new OrderAdapter(getActivity(), orders, new OrderAdapter.OnOrderActionListener() {
             @Override
-            public void onAccept(OrderModelClass order) {
-                // Update the order status to "Accepted"
-                orderDbHelper.updateOrderStatus(order.getOrderID(), "Accepted");
-
-                // Optionally, refresh the orders list
-                List<OrderModelClass> updatedOrders = orderDbHelper.getOrdersByCompanyEmail(companyEmail);
-                orderAdapter.updateOrders(updatedOrders);
-
-                // Optionally, show a message to the user (Toast)
-                Toast.makeText(getActivity(), "Order Accepted", Toast.LENGTH_SHORT).show();
-
-            }
-
-            @Override
-            public void onReject(OrderModelClass order) {
-                // Update the order status to "Rejected"
-                orderDbHelper.updateOrderStatus(order.getOrderID(), "Rejected");
-
-                // Optionally, refresh the orders list
-                List<OrderModelClass> updatedOrders = orderDbHelper.getOrdersByCompanyEmail(companyEmail);
-                orderAdapter.updateOrders(updatedOrders);
-
-                // Optionally, show a message to the user (Toast)
-                Toast.makeText(getActivity(), "Order Rejected", Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onViewDetails(OrderModelClass order) {
+            public void onViewDetails(CustomerOrderModelClass order) {
                 // Show the order details in a dialog
                 showOrderDetailsDialog(order);
             }
@@ -87,7 +56,8 @@ public class CompanyNotifyFragment extends Fragment {
 
         return view;
     }
-    private void showOrderDetailsDialog(OrderModelClass order) {
+
+    private void showOrderDetailsDialog(CustomerOrderModelClass order) {
         // Create a dialog
         Dialog dialog = new Dialog(getActivity());
         dialog.setContentView(R.layout.dialog_order_details);
@@ -106,9 +76,9 @@ public class CompanyNotifyFragment extends Fragment {
         tvOrderStatus.setText("Order Status: " + order.getOrderStatus());
 
         // Set up RecyclerView with the new DialogProductAdapter
-        DialogProductAdapter dialogProductAdapter = new DialogProductAdapter(getActivity(), order.getProducts());
-        recyclerViewProducts.setLayoutManager(new LinearLayoutManager(getActivity()));
-        recyclerViewProducts.setAdapter(dialogProductAdapter);
+//        DialogProductAdapter dialogProductAdapter = new DialogProductAdapter(getActivity(), order.getProducts());
+//        recyclerViewProducts.setLayoutManager(new LinearLayoutManager(getActivity()));
+//        recyclerViewProducts.setAdapter(dialogProductAdapter);
 
         // Set up the close button
         btnClose.setOnClickListener(v -> dialog.dismiss());
@@ -116,7 +86,4 @@ public class CompanyNotifyFragment extends Fragment {
         // Show the dialog
         dialog.show();
     }
-
-
-
 }

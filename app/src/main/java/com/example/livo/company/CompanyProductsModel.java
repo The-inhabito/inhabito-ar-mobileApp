@@ -34,6 +34,23 @@ public class CompanyProductsModel implements Parcelable {
         this.productID = productID;  // Initialize the productID
     }
 
+    public CompanyProductsModel(int productID, String productName, String quantity) {
+        this.quantity = quantity;
+    }
+
+    public CompanyProductsModel(String productID, String productName, String quantity) {
+        this.productID = productID;
+        this.name = productName;
+        this.quantity = quantity;
+    }
+
+    public CompanyProductsModel(String productID, String productName, String quantity, String productPrice) {
+        this.productID = productID;
+        this.name = productName;
+        this.quantity = quantity;
+        this.price = productPrice;
+    }
+
     public String getCompanyID() {
         return companyID;
     }

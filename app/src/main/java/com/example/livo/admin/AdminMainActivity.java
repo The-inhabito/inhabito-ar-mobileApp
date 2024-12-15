@@ -30,14 +30,12 @@ public class AdminMainActivity extends AppCompatActivity {
         binding.bottomNavigationViewAdmin.setOnItemSelectedListener(item -> {
             Fragment fragment = new Fragment();
             int itemId = item.getItemId();
-            if (itemId == R.id.home) {
-                fragment = new AdminHomeFragment();
+            if (itemId == R.id.notify) {
+                fragment = new AdminNotificationFragment();
             } else if (itemId == R.id.company) {
                 fragment = new AdminViewCompanyFragment();
             } else if (itemId == R.id.customer) {
                 fragment = new AdminViewCustomerFragment();
-            } else if (itemId == R.id.notify) {
-                fragment = new AdminNotificationFragment();
             }
             replaceFragment(fragment);
             return true;

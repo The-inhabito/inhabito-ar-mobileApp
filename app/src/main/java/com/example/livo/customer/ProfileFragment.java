@@ -8,17 +8,15 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.example.livo.Database;
@@ -33,6 +31,7 @@ public class ProfileFragment extends Fragment {
     private Database database;
     private Bitmap profileImageBitmap;
     private int userId;
+    private String userEmail; // Track the email of the logged-in user
     private CustomerSession customerSession;
 
     @Override
@@ -41,21 +40,29 @@ public class ProfileFragment extends Fragment {
         View view = binding.getRoot(); // Use the binding's root view
         database = new Database(requireContext());
 
-        // Get the user ID from session
-        CustomerSession session = CustomerSession.getInstance(requireContext());
-        String userEmail = session.getEmail();
+        // Get the user email from session
+        customerSession = CustomerSession.getInstance(requireContext());
+        userEmail = customerSession.getEmail();
+
+        if (userEmail == null || userEmail.isEmpty()) {
+            Log.e("ProfileFragment", "No user email found in session.");
+            Toast.makeText(requireContext(), "Session expired. Please log in again.", Toast.LENGTH_SHORT).show();
+            logoutAndRedirect();
+            return view;
+        }
+
+        Log.d("ProfileFragment", "User Email: " + userEmail);
 
         // Retrieve user ID based on email
-        if (userEmail != null) {
-            Cursor cursor = database.getReadableDatabase().rawQuery(
-                    "SELECT user_id FROM userLogin_data WHERE email = ?",
-                    new String[]{userEmail}
-            );
-            if (cursor.moveToFirst()) {
-                userId = cursor.getInt(0);
-            }
-            cursor.close();
+        userId = getUserIdFromEmail(userEmail);
+        if (userId == -1) {
+            Log.e("ProfileFragment", "User ID not found for email: " + userEmail);
+            Toast.makeText(requireContext(), "User not found. Please log in again.", Toast.LENGTH_SHORT).show();
+            logoutAndRedirect();
+            return view;
         }
+
+        Log.d("ProfileFragment", "User ID: " + userId);
 
         // Load user data into UI
         loadUserData();
@@ -66,32 +73,40 @@ public class ProfileFragment extends Fragment {
         // Set up the update button
         binding.updateProfileButton.setOnClickListener(view1 -> updateUserData());
 
-        // Set up the logout button
-        Button btnLogout = view.findViewById(R.id.btn_logout);
-        btnLogout.setOnClickListener(v -> {
-            // Call clearSession from CustomerSession
-            session.clearSession();
 
-            // Redirect to MainActivity
-            Intent intent = new Intent(requireActivity(), MainActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            startActivity(intent);
+        // Set up "Logout" button
+        binding.btnLogout.setOnClickListener(v -> {
+            customerSession.clearSession();
+            logoutAndRedirect();
         });
 
-        return view; // Return the root view
+        return view;
+    }
+
+    private int getUserIdFromEmail(String email) {
+        Cursor cursor = database.getReadableDatabase().rawQuery(
+                "SELECT user_id FROM userLogin_data WHERE email = ?",
+                new String[]{email}
+        );
+
+        int id = -1; // Default to -1 if not found
+        if (cursor.moveToFirst()) {
+            id = cursor.getInt(0);
+        }
+        cursor.close();
+        return id;
     }
 
     private void loadUserData() {
         Cursor cursor = database.getUserData(userId);
         if (cursor.moveToFirst()) {
-            // Retrieve data from the cursor
             String name = cursor.getString(0);
             String address = cursor.getString(1);
             byte[] imageBytes = cursor.getBlob(2);
             String contact = cursor.getString(3);
             String email = cursor.getString(4);
 
-            // Display data in the UI
+            // Update UI
             binding.profileName.setText(name);
             binding.profileAddress.setText(address);
             binding.profileContact.setText(contact);
@@ -101,6 +116,8 @@ public class ProfileFragment extends Fragment {
                 profileImageBitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
                 binding.profileImage.setImageBitmap(profileImageBitmap);
             }
+        } else {
+            Log.e("ProfileFragment", "No user data found for userId: " + userId);
         }
         cursor.close();
     }
@@ -143,6 +160,12 @@ public class ProfileFragment extends Fragment {
         } else {
             Toast.makeText(requireContext(), "Failed to update profile", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private void logoutAndRedirect() {
+        Intent intent = new Intent(requireActivity(), MainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
     }
 
     @Override

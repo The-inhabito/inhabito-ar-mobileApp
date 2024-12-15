@@ -32,24 +32,31 @@ public class CustomerLogin extends AppCompatActivity {
         binding.cusLoginBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String email = binding.cusLoginEmail.getText().toString()     ;
+                String email = binding.cusLoginEmail.getText().toString();
                 String password = binding.cusLoginPass.getText().toString();
-                if(email.equals("") || password.equals("")){
+
+                if (email.equals("") || password.equals("")) {
                     Toast.makeText(CustomerLogin.this, "Fill all the fields", Toast.LENGTH_SHORT).show();
-                }
-                else{
+                } else {
                     Boolean checkCredentials = database.checkEmailPassword(email, password);
 
-                    if(checkCredentials == true){
+                    if (checkCredentials) {
+                        // Save email in session
+                        CustomerSession session = CustomerSession.getInstance(getApplicationContext());
+                        session.setEmail(email);
+
                         Toast.makeText(CustomerLogin.this, "Login Successful", Toast.LENGTH_SHORT).show();
+
+                        // Navigate to Home activity
                         Intent intent = new Intent(getApplicationContext(), Home.class);
-                       startActivity(intent);
-                    }else{
+                        startActivity(intent);
+                    } else {
                         Toast.makeText(CustomerLogin.this, "Invalid Credentials", Toast.LENGTH_SHORT).show();
                     }
                 }
             }
         });
+
 
         binding.signupRedirect.setOnClickListener(new View.OnClickListener() {
             @Override

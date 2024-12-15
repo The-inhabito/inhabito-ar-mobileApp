@@ -15,14 +15,16 @@ public class ProductModel implements Parcelable {
     private String companyID;
     private String status;  // New field for product status
     private String productID;  // Add productID field
+    public ProductModel() {
+    }
 
     // Empty constructor for Firebase
-    public ProductModel() {
+    public ProductModel(String productID, String productName, String quantity, String productPrice) {
     }
 
     // Constructor with all fields, including productID
     public ProductModel(String name, String description, String quantity, String price,
-                                 String imageUrl, String modelUrl, String companyID, String status, String productID) {
+                        String imageUrl, String modelUrl, String companyID, String status, String productID) {
         this.name = name;
         this.description = description;
         this.quantity = quantity;
